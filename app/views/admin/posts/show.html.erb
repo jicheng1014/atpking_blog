@@ -1,0 +1,42 @@
+<div class="sm:flex sm:items-center mb-8">
+  <div class="sm:flex-auto">
+    <h1 class="text-2xl font-semibold text-gray-900"><%= @post.title %></h1>
+  </div>
+  <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none space-x-4">
+    <%= link_to '编辑', edit_admin_post_path(@post), class: "inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" %>
+    <%= link_to '返回列表', admin_posts_path, class: "inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" %>
+  </div>
+</div>
+
+<div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="p-6">
+    <div class="flex justify-between items-center text-sm text-gray-500 mb-6">
+      <div>
+        <span class="mr-4">状态：<%= @post.status == 'published' ? '已发布' : '草稿' %></span>
+        <span>创建于：<%= @post.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+      </div>
+      <%= link_to '查看公开页面', post_path(@post), class: "text-blue-600 hover:text-blue-800", target: "_blank" if @post.status == 'published' %>
+    </div>
+
+    <div class="prose max-w-none">
+      <%= @post.content %>
+    </div>
+  </div>
+</div>
+
+<% if @comments.any? %>
+  <div class="mt-8">
+    <h2 class="text-lg font-medium text-gray-900 mb-4">评论列表</h2>
+    <div class="space-y-4">
+      <% @comments.each do |comment| %>
+        <div class="bg-white shadow-sm rounded-lg p-4">
+          <div class="flex justify-between items-start mb-2">
+            <span class="font-medium"><%= comment.user.email %></span>
+            <span class="text-sm text-gray-500"><%= comment.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+          </div>
+          <p class="text-gray-700"><%= comment.content %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

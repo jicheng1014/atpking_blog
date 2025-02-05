@@ -1,0 +1,50 @@
+<div class="sm:flex sm:items-center mb-8">
+  <div class="sm:flex-auto">
+    <h1 class="text-2xl font-semibold text-gray-900">写新文章</h1>
+  </div>
+</div>
+
+<%= form_with(model: [:admin, @post], class: "space-y-6") do |f| %>
+  <% if @post.errors.any? %>
+    <div class="bg-red-50 text-red-500 p-4 rounded-md mb-6">
+      <ul class="list-disc list-inside">
+        <% @post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="space-y-6">
+      <div>
+        <%= f.label :title, '标题', class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= f.text_field :title, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :content, '内容', class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= f.text_area :content, rows: 15, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+        </div>
+      </div>
+
+      <div>
+        <%= f.label :status, '状态', class: "block text-sm font-medium text-gray-700" %>
+        <div class="mt-1">
+          <%= f.select :status,
+              options_for_select([['草稿', 'draft'], ['发布', 'published']], @post.status),
+              {},
+              class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-end gap-3">
+      <%= link_to '取消', admin_posts_path, class: "rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+      <%= f.submit '保存文章', class: "rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+    </div>
+  </div>
+<% end %>

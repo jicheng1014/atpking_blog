@@ -1,0 +1,60 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div class="p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900"><%= @post.title %></h1>
+        <% if current_user && @post.user_id == current_user.id %>
+          <div class="flex items-center space-x-4">
+            <%= link_to admin_posts_path, class: "text-gray-500 hover:text-gray-700" do %>
+              <span>返回管理</span>
+            <% end %>
+            <%= link_to edit_admin_post_path(@post), class: "inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" do %>
+              <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              编辑
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="prose max-w-none">
+        <%= @post.content %>
+      </div>
+
+      <div class="mt-6 flex justify-between items-center text-sm text-gray-500">
+        <div>
+          <span>作者：<%= @post.user.email %></span>
+          <span class="mx-2">•</span>
+          <span>发布于：<%= @post.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+        </div>
+        <% if current_user && @post.user_id == current_user.id %>
+          <div class="flex items-center space-x-2 text-sm">
+            <span class="<%= @post.status == 'published' ? 'text-green-600' : 'text-yellow-600' %>">
+              <%= @post.status == 'published' ? '已发布' : '草稿' %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">评论</h2>
+    <% if @comments.any? %>
+      <div class="space-y-6">
+        <% @comments.each do |comment| %>
+          <div class="bg-white shadow-sm rounded-lg p-4">
+            <div class="flex justify-between items-start mb-2">
+              <span class="font-medium"><%= comment.user.email %></span>
+              <span class="text-sm text-gray-500"><%= comment.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+            </div>
+            <p class="text-gray-700"><%= comment.content %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-500">暂无评论</p>
+    <% end %>
+  </div>
+</div>
