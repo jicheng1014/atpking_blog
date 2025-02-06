@@ -2,7 +2,7 @@
 service: atpking_blog
 
 # Name of the container image.
-image: your-user/atpking_blog
+image: jicheng1014/atpking_blog
 
 # Deploy to these servers.
 servers:
