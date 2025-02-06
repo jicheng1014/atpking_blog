@@ -66,9 +66,14 @@ aliases:
 # Use a persistent storage volume for sqlite database files and local Active Storage files.
 # Recommended to change this to a mounted volume path that is backed up off server.
 volumes:
-  - "/var/www/atpking_blog/storage:/rails/storage"
-  - "/var/www/atpking_blog/public/uploads:/rails/public/uploads"
+  - "atpking_blog_storage:/rails/storage"
+  - "atpking_blog_uploads:/rails/public/uploads"
 
+volumes_config:
+  atpking_blog_storage:
+    chown: "1000:1000"
+  atpking_blog_uploads:
+    chown: "1000:1000"
 
 # Bridge fingerprinted assets, like JS and CSS, between versions to avoid
 # hitting 404 on in-flight requests. Combines all files from new and old
