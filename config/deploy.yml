@@ -19,7 +19,7 @@ servers:
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: false
-  host: www.890q.com
+  host: www.3qruok.com
   # 修改 80 443 为 8090 8443
 
 # Credentials for your image host.
