@@ -20,10 +20,10 @@ servers:
 proxy:
   ssl: false
   host: www.890q.com
-  app_port: 3090
+  # 修改 80 443 为 8090 8443
+
 # Credentials for your image host.
 registry:
-
   # Specify the registry server, if you're not using Docker Hub
   # server: registry.digitalocean.com / ghcr.io / ...
   server: registry.cn-guangzhou.aliyuncs.com
