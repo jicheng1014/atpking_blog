@@ -9,28 +9,14 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.2.1
-ARG TRUE_INTERNET
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
 
-# Configure gem sources based on TRUE_INTERNET environment variable
-RUN if [ -z "$TRUE_INTERNET" ]; then \
-    gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/; \
-    bundle config mirror.https://rubygems.org https://gems.ruby-china.com; \
-    fi
-
-# Configure apt sources based on TRUE_INTERNET environment variable
-RUN if [ -z "$TRUE_INTERNET" ]; then \
-    cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
-    fi
-
 # Install base packages
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libyaml-dev build-essential libssl-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
@@ -44,7 +30,7 @@ FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git pkg-config && \
+    apt-get install --no-install-recommends -y build-essential git pkg-config libyaml-dev build-essential libssl-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
@@ -60,7 +46,7 @@ COPY . .
 RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile --trace
 
 
 
