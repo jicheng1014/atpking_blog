@@ -41,7 +41,11 @@ gem "thruster", require: false
 # gem "image_processing", "~> 1.2"
 
 # Tailwind CSS
-gem "tailwindcss-rails"
+gem "tailwindcss-rails", "~> 3.3.1"
+
+# Markdown support
+gem "redcarpet"
+gem "rouge"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

@@ -1,4 +1,6 @@
 class Post < ApplicationRecord
+  include MarkdownRenderable
+
   belongs_to :user
   has_many :comments, dependent: :destroy
 
@@ -8,4 +10,8 @@ class Post < ApplicationRecord
 
   scope :published, -> { where(status: 'published') }
   scope :drafts, -> { where(status: 'draft') }
+
+  def rendered_content
+    markdown_to_html(content)
+  end
 end

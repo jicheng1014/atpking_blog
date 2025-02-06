@@ -13,51 +13,34 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <!-- Favicons -->
+    <%= favicon_link_tag 'favicons/favicon-16x16.png', sizes: '16x16', type: 'image/png' %>
+    <%= favicon_link_tag 'favicons/favicon-32x32.png', sizes: '32x32', type: 'image/png' %>
+    <%= favicon_link_tag 'favicons/apple-touch-icon.png', rel: 'apple-touch-icon', type: 'image/png' %>
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= yield :styles %>
   </head>
 
   <body class="h-full">
     <div class="min-h-full">
-      <!-- 导航栏 -->
-      <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between h-16">
-            <div class="flex">
-              <%= link_to root_path, class: "flex items-center flex-shrink-0" do %>
-                <span class="text-xl font-bold text-gray-900">博客系统</span>
-              <% end %>
-            </div>
-
-            <div class="flex items-center">
-              <% if current_user %>
-                <%= link_to '管理文章', admin_root_path, class: 'text-gray-500 hover:text-gray-700 mr-4' %>
-                <span class="text-gray-500 mr-4"><%= current_user.email %></span>
-                <%= button_to '退出', session_path, method: :delete, class: 'text-gray-500 hover:text-gray-700' %>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <%= render 'shared/navbar' %>
 
       <!-- 提示信息 -->
       <% if notice %>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <div class="bg-green-50 text-green-700 p-4 rounded-md">
+        <div class="px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
+          <div class="p-4 text-green-700 rounded-md bg-green-50">
             <%= notice %>
           </div>
         </div>
       <% end %>
 
       <% if alert %>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <div class="bg-red-50 text-red-700 p-4 rounded-md">
+        <div class="px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
+          <div class="p-4 text-red-700 rounded-md bg-red-50">
             <%= alert %>
           </div>
         </div>

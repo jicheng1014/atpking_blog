@@ -1,0 +1,21 @@
+<!-- 导航栏 -->
+<nav class="bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex">
+        <%= link_to root_path, class: "flex items-center flex-shrink-0" do %>
+          <%= image_tag "logo.jpeg", class: "h-6 w-auto mr-2", style: "max-height: 32px;", alt: "Logo" %>
+          <span class="text-xl font-bold text-gray-900">博客系统</span>
+        <% end %>
+      </div>
+
+      <div class="flex items-center">
+        <% if current_user %>
+          <%= link_to '管理文章', admin_root_path, class: 'text-gray-500 hover:text-gray-700 mr-4' %>
+          <span class="text-gray-500 mr-4"><%= current_user.email %></span>
+          <%= button_to '退出', session_path, method: :delete, class: 'text-gray-500 hover:text-gray-700' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
