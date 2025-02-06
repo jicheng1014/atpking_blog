@@ -9,10 +9,24 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.2.1
+ARG TRUE_INTERNET
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
+
+# Configure gem sources based on TRUE_INTERNET environment variable
+RUN if [ -z "$TRUE_INTERNET" ]; then \
+    gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/; \
+    bundle config mirror.https://rubygems.org https://gems.ruby-china.com; \
+    fi
+
+# Configure apt sources based on TRUE_INTERNET environment variable
+RUN if [ -z "$TRUE_INTERNET" ]; then \
+    cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list; \
+    fi
 
 # Install base packages
 RUN apt-get update -qq && \

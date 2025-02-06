@@ -16,22 +16,24 @@
       <!-- 导航栏 -->
       <nav class="bg-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between h-16">
-            <div class="flex">
-              <%= link_to admin_root_path, class: "flex items-center flex-shrink-0 text-white" do %>
-                <span class="text-xl font-bold">博客管理</span>
+          <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+              <%= link_to admin_root_path, class: "flex-shrink-0" do %>
+                <span class="text-xl font-bold text-white">博客管理</span>
               <% end %>
 
-              <div class="ml-6 flex space-x-4">
-                <%= link_to '文章列表', admin_posts_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
-                <%= link_to '写新文章', new_admin_post_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
-                <%= link_to '返回首页', root_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
+              <div class="hidden md:block">
+                <div class="ml-10 flex items-center space-x-4">
+                  <%= link_to '文章列表', admin_posts_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
+                  <%= link_to '写新文章', new_admin_post_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
+                  <%= link_to '返回首页', root_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
+                </div>
               </div>
             </div>
 
-            <div class="flex items-center">
-              <span class="text-gray-300 mr-4"><%= current_user.email %></span>
-              <%= button_to '退出', session_path, method: :delete, class: 'text-gray-300 hover:text-white' %>
+            <div class="flex items-center space-x-4">
+              <span class="text-gray-300"><%= current_user.email %></span>
+              <%= button_to '退出', session_path, method: :delete, class: 'text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium' %>
             </div>
           </div>
         </div>

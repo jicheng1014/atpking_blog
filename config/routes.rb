@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resource :session
   # 设置首页为文章列表
   root "posts#index"
 

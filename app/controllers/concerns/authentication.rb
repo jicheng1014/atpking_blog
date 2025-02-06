@@ -3,7 +3,7 @@ module Authentication
 
   included do
     before_action :require_authentication
-    helper_method :authenticated?, :current_user
+    helper_method :authenticated?
   end
 
   class_methods do
@@ -41,22 +41,12 @@ module Authentication
     def start_new_session_for(user)
       user.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
         Current.session = session
-        Current.user = user
         cookies.signed.permanent[:session_id] = { value: session.id, httponly: true, same_site: :lax }
       end
     end
 
     def terminate_session
-      Current.session&.destroy
-      Current.reset
+      Current.session.destroy
       cookies.delete(:session_id)
-    end
-
-    def current_user
-      Current.user ||= Current.session&.user
-    end
-
-    def authenticate_user!
-      redirect_to new_session_path, alert: "请先登录" unless current_user
     end
 end

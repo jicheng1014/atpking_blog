@@ -7,4 +7,8 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
   alias_attribute :email, :email_address
+
+  def nick_name
+    email.split('@').first
+  end
 end

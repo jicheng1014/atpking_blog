@@ -1,5 +1,5 @@
 class Admin::PostsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticated?
   before_action :set_post, only: [:show, :edit, :update, :destroy]
   layout 'admin'
 
