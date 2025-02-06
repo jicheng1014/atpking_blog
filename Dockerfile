@@ -14,6 +14,13 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
+# Configure apt and gem sources for China
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/ && \
+    bundle config mirror.https://rubygems.org https://gems.ruby-china.com
+
 # Install base packages
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libyaml-dev build-essential libssl-dev && \
@@ -47,9 +54,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile --trace
-
-
-
 
 # Final stage for app image
 FROM base
