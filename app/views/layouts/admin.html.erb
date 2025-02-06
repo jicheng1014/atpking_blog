@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="h-full bg-gray-50">
   <head>
-    <title>博客管理</title>
+    <title>3q,r u ok?</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -15,7 +15,7 @@
     <div class="min-h-full">
       <!-- 导航栏 -->
       <nav class="bg-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div class="flex items-center justify-between h-16">
             <div class="flex items-center">
               <%= link_to admin_root_path, class: "flex-shrink-0" do %>
@@ -23,7 +23,7 @@
               <% end %>
 
               <div class="hidden md:block">
-                <div class="ml-10 flex items-center space-x-4">
+                <div class="flex items-center ml-10 space-x-4">
                   <%= link_to '文章列表', admin_posts_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
                   <%= link_to '写新文章', new_admin_post_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
                   <%= link_to '返回首页', root_path, class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" %>
@@ -41,16 +41,16 @@
 
       <!-- 提示信息 -->
       <% if notice %>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <div class="bg-green-50 text-green-700 p-4 rounded-md">
+        <div class="px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
+          <div class="p-4 text-green-700 rounded-md bg-green-50">
             <%= notice %>
           </div>
         </div>
       <% end %>
 
       <% if alert %>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <div class="bg-red-50 text-red-700 p-4 rounded-md">
+        <div class="px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
+          <div class="p-4 text-red-700 rounded-md bg-red-50">
             <%= alert %>
           </div>
         </div>
@@ -58,7 +58,7 @@
 
       <!-- 主要内容 -->
       <main class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <%= yield %>
         </div>
       </main>

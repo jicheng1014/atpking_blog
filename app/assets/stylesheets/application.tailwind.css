@@ -4,18 +4,124 @@
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+    @apply px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    @apply px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
   }
 
   .form-input {
-    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
+    @apply block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
   }
 
   .form-label {
     @apply block text-sm font-medium text-gray-700;
   }
+}
+
+/* Monokai-inspired syntax highlighting */
+.highlight {
+  @apply p-4 my-2 overflow-auto text-gray-100 bg-gray-900 rounded-md;
+}
+
+.highlight pre {
+  @apply m-0;
+}
+
+.highlight .c, .highlight .cd, .highlight .cm, .highlight .c1, .highlight .cs {
+  color: #75715e; /* 注释 */
+}
+
+.highlight .err {
+  color: #960050;
+  background-color: #1e0010;
+}
+
+.highlight .k, .highlight .kc, .highlight .kd, .highlight .kp, .highlight .kr, .highlight .kt, .highlight .kn {
+  color: #66d9ef; /* 关键字 */
+}
+
+.highlight .o, .highlight .ow {
+  color: #f92672; /* 运算符 */
+}
+
+.highlight .p, .highlight .pi {
+  color: #f8f8f2;
+}
+
+.highlight .gd {
+  color: #f92672;
+}
+
+.highlight .gi {
+  color: #a6e22e;
+}
+
+.highlight .ge {
+  font-style: italic;
+}
+
+.highlight .gs {
+  font-weight: bold;
+}
+
+.highlight .gl {
+  color: #75715e;
+}
+
+.highlight .ni {
+  color: #f8f8f2;
+}
+
+.highlight .ne, .highlight .nf {
+  color: #a6e22e; /* 函数名 */
+}
+
+.highlight .nl {
+  color: #f8f8f2;
+}
+
+.highlight .nn {
+  color: #f8f8f2;
+}
+
+.highlight .nc {
+  color: #a6e22e; /* 类名 */
+}
+
+.highlight .no {
+  color: #66d9ef;
+}
+
+.highlight .na {
+  color: #a6e22e;
+}
+
+.highlight .m, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo {
+  color: #ae81ff; /* 数字 */
+}
+
+.highlight .s, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .s2, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .s1, .highlight .ss {
+  color: #e6db74; /* 字符串 */
+}
+
+.highlight .bp, .highlight .nb {
+  color: #f8f8f2;
+}
+
+.highlight .vi, .highlight .vg, .highlight .vc, .highlight .nv {
+  color: #f8f8f2;
+}
+
+.highlight .w {
+  color: #f8f8f2;
+}
+
+.highlight .n, .highlight .py, .highlight .nx {
+  color: #f8f8f2;
+}
+
+.highlight .nt {
+  color: #f92672; /* XML/HTML 标签 */
 }

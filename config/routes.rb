@@ -11,7 +11,11 @@ Rails.application.routes.draw do
   # 管理界面路由，需要登录
   namespace :admin do
     root to: "posts#index"
-    resources :posts
+    resources :posts do
+      collection do
+        post :upload_image
+      end
+    end
   end
 
   # 认证相关路由
