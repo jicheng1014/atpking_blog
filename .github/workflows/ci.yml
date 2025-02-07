@@ -29,6 +29,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
 
+      - name: show ip
+        run: |
+          echo ${{ secrets.DEPLOY_HOST }}
+
       - name: Add host key
         run: |
           mkdir -p ~/.ssh
