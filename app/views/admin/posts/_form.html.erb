@@ -14,7 +14,7 @@
     <%= f.text_field :title, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
   </div>
 
-  <div data-controller="paste-image markdown-editor"
+  <div data-controller="markdown-editor"
        class="space-y-4"
        data-markdown-editor-post-id-value="<%= post.id || 'new' %>"
        data-markdown-editor-post-updated-at-value="<%= post.updated_at&.to_i || Time.current.to_i %>">
@@ -48,6 +48,7 @@
               class: "w-full p-4 border-0 rounded-none focus:ring-0",
               style: "min-height: 500px; resize: vertical;",
               data: {
+                controller: "paste-image",
                 paste_image_target: "editor",
                 markdown_editor_target: "editor",
                 action: "input->markdown-editor#updatePreview keydown->markdown-editor#handleKeydown"
