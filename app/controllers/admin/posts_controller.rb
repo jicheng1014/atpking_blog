@@ -45,23 +45,16 @@ class Admin::PostsController < ApplicationController
     image = params[:image]
     return render json: { error: '没有上传图片' }, status: :unprocessable_entity unless image
 
-    # 生成唯一的文件名
-    filename = "#{SecureRandom.uuid}-#{image.original_filename}"
-
-    # 使用相对路径，这样在部署时会正确映射到容器内的路径
-    relative_path = File.join('uploads', filename)
-    filepath = Rails.root.join('public', relative_path)
-
-    # 确保目录存在
-    FileUtils.mkdir_p(File.dirname(filepath))
-
-    # 保存文件
-    File.open(filepath, 'wb') do |file|
-      file.write(image.read)
-    end
+    # 使用 Active Storage 处理上传
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: image,
+      filename: image.original_filename,
+      content_type: image.content_type
+    )
 
     # 返回 Markdown 格式的图片链接
-    render json: { markdown: "![#{image.original_filename}](/#{relative_path})" }
+    url = Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)
+    render json: { markdown: "![#{image.original_filename}](#{url})" }
   end
 
   private

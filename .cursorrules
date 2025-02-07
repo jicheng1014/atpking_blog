@@ -1,0 +1,42 @@
+{
+  "search": {
+    "excludes": [
+      "tmp/**/*",
+      "log/**/*",
+      "vendor/**/*",
+      "node_modules/**/*",
+      "public/assets/**/*",
+      "coverage/**/*",
+      ".git/**/*"
+    ]
+  },
+  "intelligence": {
+    "initializeTimeout": 30,
+    "activeLanguages": ["ruby", "javascript", "erb", "css"],
+    "framework": {
+      "name": "rails",
+      "version": "8.0",
+      "features": {
+        "javascript": "importmap",
+        "css": "tailwindcss",
+        "assetPipeline": "propshaft",
+        "frontend": {
+          "turbo": true,
+          "stimulus": true
+        }
+      }
+    }
+  },
+  "completion": {
+    "disableDefaultCompletion": false,
+    "disableSnippets": false
+  },
+  "editor": {
+    "formatOnSave": true,
+    "tabSize": 2,
+    "insertSpaces": true,
+    "rulers": [120],
+    "trimTrailingWhitespace": true,
+    "insertFinalNewline": true
+  }
+}
