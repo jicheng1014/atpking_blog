@@ -28,3 +28,5 @@ Things you may want to cover:
 本项目使用 GitHub Actions 自动部署，当代码推送到 main 分支时会自动触发部署流程。
 
 测试自动部署功能 - 通过 GitHub Actions。
+
+测试新的 PEM 格式 SSH 密钥。
