@@ -54,4 +54,10 @@ jobs:
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
         run: |
+          # 测试阿里云容器镜像服务登录
+          echo "Testing Aliyun Container Registry login..."
+          echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" | docker login registry.cn-guangzhou.aliyuncs.com -u shuidiaogetou --password-stdin
+          docker pull registry.cn-guangzhou.aliyuncs.com/shuidiaogetou/test:latest || true
+          echo "Aliyun Container Registry login successful"
+
           kamal deploy
