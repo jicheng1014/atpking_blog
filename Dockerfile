@@ -24,10 +24,20 @@ RUN if [ "$USE_CN_MIRRORS" = "true" ]; then \
       bundle config mirror.https://rubygems.org https://gems.ruby-china.com; \
     fi
 
+# Configure apt for better network resilience
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+    echo 'Acquire::http::Timeout "120";' > /etc/apt/apt.conf.d/99timeout && \
+    echo 'Acquire::https::Timeout "120";' >> /etc/apt/apt.conf.d/99timeout
+
 # Install base packages
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+RUN --mount=type=cache,target=/var/cache/apt \
+    for i in $(seq 1 3); do \
+      (apt-get update -qq && \
+       apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
+       exit 0) || if [ $i -eq 3 ]; then exit 1; fi; \
+      echo "Retrying apt-get install... (attempt $i/3)"; \
+      sleep 2; \
+    done
 
 # Set production environment
 ENV RAILS_ENV="production" \
