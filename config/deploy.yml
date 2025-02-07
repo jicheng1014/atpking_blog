@@ -78,6 +78,8 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  args:
+    USE_CN_MIRRORS: false
 
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://orb
