@@ -1,0 +1,25 @@
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+/* 第一个段落不需要顶部间距 */
+.prose > p:first-child {
+  margin-top: 0;
+}
+
+/* 最后一个段落不需要底部间距 */
+.prose > p:last-child {
+  margin-bottom: 0;
+}
+
+.prose br {
+  content: "";
+  display: block;
+  margin-bottom: 1.5em;
+}
+
+/* 连续的换行符只保留一个间距 */
+.prose br + br {
+  display: none;
+}

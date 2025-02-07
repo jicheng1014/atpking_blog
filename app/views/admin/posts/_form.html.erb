@@ -2,6 +2,7 @@
   <% if post.errors.any? %>
     <div class="p-4 mb-6 text-red-500 rounded-md bg-red-50">
       <ul class="list-disc list-inside">
+        <% debugger %>
         <% post.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>

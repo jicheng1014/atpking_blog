@@ -10,6 +10,10 @@ class Tag < ApplicationRecord
   private
 
   def generate_slug
-    self.slug = name.to_s.parameterize
+    self.slug = if name.blank?
+      ''
+    else
+      PinYin.permlink(name).presence || SecureRandom.hex(4)
+    end
   end
 end

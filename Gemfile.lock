@@ -254,6 +254,7 @@ GEM
     reline (0.6.0)
       io-console (~> 0.5)
     rexml (3.4.0)
+    rmmseg-cpp-new (0.3.1)
     rouge (4.5.1)
     rubocop (1.71.2)
       json (~> 2.3)
@@ -283,6 +284,8 @@ GEM
       rubocop-minitest
       rubocop-performance
       rubocop-rails
+    ruby-pinyin (0.5.0)
+      rmmseg-cpp-new (~> 0.3.1)
     ruby-progressbar (1.13.0)
     rubyzip (2.4.1)
     securerandom (0.4.1)
@@ -391,6 +394,7 @@ DEPENDENCIES
   redcarpet
   rouge
   rubocop-rails-omakase
+  ruby-pinyin
   selenium-webdriver
   solid_cable
   solid_cache

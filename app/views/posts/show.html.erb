@@ -17,7 +17,20 @@
           </div>
         <% end %>
       </div>
-
+      <div class="flex items-center justify-between my-6 text-sm text-gray-500">
+        <div>
+          <span>作者：<%= @post.user.nick_name %></span>
+          <span class="mx-2">•</span>
+          <span>发布于：<%= @post.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+        </div>
+        <% if current_user && @post.user_id == current_user.id %>
+          <div class="flex items-center space-x-2 text-sm">
+            <span class="<%= @post.status == 'published' ? 'text-green-600' : 'text-yellow-600' %>">
+              <%= @post.status == 'published' ? '已发布' : '草稿' %>
+            </span>
+          </div>
+        <% end %>
+      </div>
       <% if @post.tags.any? %>
         <div class="mb-6">
           <div class="flex flex-wrap gap-2">
@@ -34,20 +47,7 @@
         <%= raw @post.rendered_content %>
       </div>
 
-      <div class="flex items-center justify-between mt-6 text-sm text-gray-500">
-        <div>
-          <span>作者：<%= @post.user.nick_name %></span>
-          <span class="mx-2">•</span>
-          <span>发布于：<%= @post.created_at.strftime("%Y-%m-%d %H:%M") %></span>
-        </div>
-        <% if current_user && @post.user_id == current_user.id %>
-          <div class="flex items-center space-x-2 text-sm">
-            <span class="<%= @post.status == 'published' ? 'text-green-600' : 'text-yellow-600' %>">
-              <%= @post.status == 'published' ? '已发布' : '草稿' %>
-            </span>
-          </div>
-        <% end %>
-      </div>
+
     </div>
   </div>
 

@@ -7,8 +7,8 @@
   </div>
 </div>
 
-<div class="mt-8 flex flex-col">
-  <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+<div class="flex flex-col mt-8">
+  <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
     <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
       <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
         <table class="min-w-full divide-y divide-gray-300">
@@ -22,21 +22,21 @@
               </th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-200 bg-white">
+          <tbody class="bg-white divide-y divide-gray-200">
             <% @posts.each do |post| %>
               <tr>
-                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                  <%= link_to post.title, admin_post_path(post), class: "hover:text-blue-600" %>
+                <td class="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-6">
+                  <%= link_to post.title, post_path(post), class: "hover:text-blue-600" %>
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                   <span class="<%= post.status == 'published' ? 'text-green-600' : 'text-yellow-600' %>">
                     <%= post.status == 'published' ? '已发布' : '草稿' %>
                   </span>
                 </td>
-                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                   <%= post.created_at.strftime("%Y-%m-%d %H:%M") %>
                 </td>
-                <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
+                <td class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
                   <%= link_to '编辑', edit_admin_post_path(post), class: "text-blue-600 hover:text-blue-900" %>
                   <%= button_to '删除', admin_post_path(post), method: :delete, class: "ml-3 text-red-600 hover:text-red-900", form: { data: { turbo_confirm: '确定要删除这篇文章吗？' } } %>
                 </td>
