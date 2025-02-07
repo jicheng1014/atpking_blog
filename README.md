@@ -30,3 +30,5 @@ Things you may want to cover:
 测试自动部署功能 - 通过 GitHub Actions。
 
 测试新的 PEM 格式 SSH 密钥。
+
+测试添加 KAMAL_REGISTRY_PASSWORD。
