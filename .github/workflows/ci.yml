@@ -34,13 +34,15 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Login to Aliyun Container Registry
+        run: |
+          echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" | docker login registry.cn-guangzhou.aliyuncs.com -u shuidiaogetou --password-stdin
+
       - name: Set up Kamal secrets file
         run: |
           mkdir -p .kamal
-          cat > .kamal/secrets << EOL
-          KAMAL_REGISTRY_PASSWORD=${{ secrets.KAMAL_REGISTRY_PASSWORD }}
-          RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
-          EOL
+          echo "KAMAL_REGISTRY_PASSWORD=${{ secrets.KAMAL_REGISTRY_PASSWORD }}" > .kamal/secrets
+          echo "RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}" >> .kamal/secrets
 
       - name: Deploy to production
         env:
