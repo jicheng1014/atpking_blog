@@ -1,4 +1,4 @@
-<%= form_with(model: [:admin, post], class: "space-y-6") do |f| %>
+<%= form_with(model: [:admin, post], class: "space-y-6", data: { controller: "draft-storage", action: "submit->draft-storage#handleSubmit" }) do |f| %>
   <% if post.errors.any? %>
     <div class="p-4 mb-6 text-red-500 rounded-md bg-red-50">
       <ul class="list-disc list-inside">
@@ -21,11 +21,11 @@
 
   <div data-controller="markdown-editor paste-image"
        class="space-y-4"
-       data-markdown-editor-post-id-value="<%= post.id || 'new' %>"
-       data-markdown-editor-post-updated-at-value="<%= post.updated_at&.to_i || Time.current.to_i %>">
+       data-draft-storage-post-id-value="<%= post.id || 'new' %>"
+       data-draft-storage-post-updated-at-value="<%= post.updated_at&.to_i || Time.current.to_i %>">
     <div class="flex items-center justify-between mb-2">
       <%= f.label :content, '内容', class: "block text-sm font-medium text-gray-700" %>
-      <div class="text-sm text-gray-500" data-markdown-editor-target="autoSaveStatus"></div>
+      <div class="text-sm text-gray-500" data-draft-storage-target="autoSaveStatus"></div>
     </div>
 
     <div class="border rounded-md">
@@ -46,8 +46,8 @@
         </nav>
       </div>
 
-      <div class="relative" style="min-height: 500px">
-        <div class="relative">
+      <div class="relative editor-wrapper" style="min-height: 500px">
+        <div class="relative h-full">
           <%= f.text_area :content,
               rows: 20,
               class: "w-full p-4 border-0 rounded-none focus:ring-0 leading-relaxed",
@@ -55,26 +55,29 @@
               data: {
                 paste_image_target: "editor",
                 markdown_editor_target: "editor",
-                action: "input->markdown-editor#updatePreview keydown->markdown-editor#handleKeydown paste->paste-image#handlePaste dragover->paste-image#handleDragOver drop->paste-image#handleDrop"
+                draft_storage_target: "editor",
+                action: "input->markdown-editor#updatePreview keydown->draft-storage#handleKeydown paste->paste-image#handlePaste dragover->paste-image#handleDragOver drop->paste-image#handleDrop"
               } %>
-          <div class="absolute bottom-0 left-0 right-0 flex items-center justify-between p-2 border-t bg-gray-50">
-            <label class="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium text-gray-600 transition-colors rounded-md cursor-pointer hover:text-gray-900 hover:bg-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <span>插入图片</span>
-              <input type="file"
-                     class="hidden"
-                     accept="image/*"
-                     data-paste-image-target="fileInput"
-                     data-action="change->paste-image#handleFileSelect">
-            </label>
-            <div class="text-xs text-gray-500" data-markdown-editor-target="lastSaveTime"></div>
-          </div>
         </div>
 
         <div class="absolute inset-0 hidden p-4 overflow-y-auto prose-sm prose bg-white max-w-none"
+             style="top: 0; bottom: 52px;"
              data-markdown-editor-target="preview">
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between p-2 border-t bg-gray-50">
+          <label class="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium text-gray-600 transition-colors rounded-md cursor-pointer hover:text-gray-900 hover:bg-gray-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span>插入图片</span>
+            <input type="file"
+                   class="hidden"
+                   accept="image/*"
+                   data-paste-image-target="fileInput"
+                   data-action="change->paste-image#handleFileSelect">
+          </label>
+          <div class="text-xs text-gray-500" data-draft-storage-target="lastSaveTime"></div>
         </div>
       </div>
     </div>
