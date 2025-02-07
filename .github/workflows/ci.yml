@@ -37,7 +37,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
-          ssh-keyscan -H registry.cn-guangzhou.aliyuncs.com >> ~/.ssh/known_hosts
 
       - name: Login to Aliyun Container Registry
         run: |
