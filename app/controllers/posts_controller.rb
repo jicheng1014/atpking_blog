@@ -17,4 +17,11 @@ class PostsController < ApplicationController
     @comment = Comment.new
     @comments = @post.comments.includes(:user).order(created_at: :desc)
   end
+
+  def feed
+    @posts = Post.published.order(created_at: :desc).limit(20)
+    respond_to do |format|
+      format.rss { render layout: false }
+    end
+  end
 end

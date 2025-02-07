@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   # 公开可访问的路由（只读）
   resources :posts, only: [:index, :show] do
     resources :comments, only: [:create, :destroy]
+    collection do
+      get :feed, defaults: { format: 'rss' }
+    end
   end
 
   # 管理界面路由，需要登录

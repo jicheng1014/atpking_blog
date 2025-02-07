@@ -8,6 +8,8 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%= auto_discovery_link_tag :rss, feed_posts_url(format: :rss), title: "RSS Feed" %>
+
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
