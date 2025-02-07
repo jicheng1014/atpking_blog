@@ -34,16 +34,17 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Create Kamal secrets directory
+      - name: Set up Kamal secrets file
         run: |
-          mkdir -p .kamal/github_secrets
-          echo "${{ secrets.RAILS_MASTER_KEY }}" > .kamal/github_secrets/RAILS_MASTER_KEY
-          echo "${{ secrets.KAMAL_REGISTRY_PASSWORD }}" > .kamal/github_secrets/KAMAL_REGISTRY_PASSWORD
+          mkdir -p .kamal
+          cat > .kamal/secrets << EOL
+          KAMAL_REGISTRY_PASSWORD=${{ secrets.KAMAL_REGISTRY_PASSWORD }}
+          RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
+          EOL
 
       - name: Deploy to production
         env:
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
-          KAMAL_SECRETS_PATH: .kamal/github_secrets
         run: |
           kamal deploy
