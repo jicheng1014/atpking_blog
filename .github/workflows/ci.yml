@@ -53,4 +53,4 @@ jobs:
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
         run: |
-          kamal deploy
+          kamal deploy --build-arg USE_CN_MIRRORS=false

@@ -14,12 +14,15 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-# Configure apt and gem sources for China
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-    gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/ && \
-    bundle config mirror.https://rubygems.org https://gems.ruby-china.com
+# Configure apt and gem sources based on environment variable
+ARG USE_CN_MIRRORS=true
+RUN if [ "$USE_CN_MIRRORS" = "true" ]; then \
+      cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+      sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+      sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+      gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/ && \
+      bundle config mirror.https://rubygems.org https://gems.ruby-china.com; \
+    fi
 
 # Install base packages
 RUN apt-get update -qq && \
