@@ -2,13 +2,22 @@
 <nav class="bg-white shadow-sm">
   <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="flex justify-between h-16">
-      <div class="flex">
+      <div class="flex items-center">
+        <!-- Logo -->
         <%= link_to root_path, class: "flex items-center flex-shrink-0" do %>
           <%= image_tag "logo.jpeg", class: "h-6 w-auto mr-2", style: "max-height: 32px;", alt: "Logo" %>
           <span class="text-xl font-bold text-gray-900">3Q RUOK?</span>
         <% end %>
+
+        <!-- 主导航链接 -->
+        <div class="hidden space-x-8 sm:ml-10 sm:flex">
+          <%= link_to '文章', root_path, class: nav_link_class(current_page?(posts_path)) %>
+          <%= link_to '标签', tags_path, class: nav_link_class(current_page?(tags_path)) %>
+          <%= link_to '关于', about_path, class: nav_link_class(current_page?(about_path)) if defined?(about_path) %>
+        </div>
       </div>
 
+      <!-- 右侧用户菜单 -->
       <div class="flex items-center">
         <% if current_user %>
           <%= link_to '管理文章', admin_root_path, class: 'text-gray-500 hover:text-gray-700 mr-4' %>
