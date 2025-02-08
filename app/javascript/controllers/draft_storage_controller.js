@@ -36,13 +36,21 @@ export default class extends Controller {
   }
 
   getStorageKey() {
+    // 确保 postId 存在且不为空
+    if (!this.postIdValue || this.postIdValue === 'undefined') {
+      console.warn('无效的 postId')
+      return null
+    }
     return `post_draft_${this.postIdValue}`
   }
 
   saveToLocalStorage() {
+    const key = this.getStorageKey()
+    // 如果没有有效的 key，不进行保存
+    if (!key) return
+
     const content = this.editorTarget.value
     const now = new Date()
-    const key = this.getStorageKey()
 
     // 保存内容和时间戳
     localStorage.setItem(key, JSON.stringify({
@@ -70,12 +78,15 @@ export default class extends Controller {
 
   loadFromLocalStorage() {
     const key = this.getStorageKey()
+    // 如果没有有效的 key，不进行加载
+    if (!key) return
+
     const savedData = localStorage.getItem(key)
 
     if (savedData) {
       try {
         const { content, timestamp, timeString } = JSON.parse(savedData)
-        const postUpdatedAt = this.postUpdatedAtValue * 1000 // 转换为毫秒
+        const postUpdatedAt = this.postUpdatedAtValue // 已经是毫秒了，不需要再转换
 
         // 如果是新建文章，或者本地存储的时间晚于文章更新时间，使用本地存储的内容
         if (this.postIdValue === 'new' || timestamp > postUpdatedAt) {
@@ -83,8 +94,10 @@ export default class extends Controller {
           this.updateAutoSaveStatus(this.postIdValue === 'new' ? "已加载草稿" : "已加载本地较新的草稿")
           this.lastSaveTimeTarget.textContent = `上次保存时间：${timeString}`
         } else {
-          // 如果本地存储的内容较旧，清除它
+          // 如果本地存储的内容较旧，清除它，但不修改编辑器的内容
+          // 因为编辑器此时应该已经包含了从服务器加载的最新内容
           localStorage.removeItem(key)
+          this.updateAutoSaveStatus("使用服务器端内容")
         }
       } catch (e) {
         console.error("解析本地存储数据失败:", e)
