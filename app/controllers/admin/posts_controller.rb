@@ -52,6 +52,9 @@ class Admin::PostsController < ApplicationController
       content_type: image.content_type
     )
 
+    # 触发后台任务处理图片大小
+    ResizeImageJob.perform_later(blob)
+
     # 返回 Markdown 格式的图片链接
     url = Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)
     render json: { markdown: "![#{image.original_filename}](#{url})" }

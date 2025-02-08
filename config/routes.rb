@@ -19,6 +19,9 @@ Rails.application.routes.draw do
         post :upload_image
       end
     end
+
+    # 挂载任务队列管理界面
+    mount MissionControl::Jobs::Engine => "/jobs", as: 'mission_control_jobs'
   end
 
   # 认证相关路由

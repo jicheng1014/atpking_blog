@@ -28,6 +28,9 @@ gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
 
+# 任务队列管理界面
+gem "mission_control-jobs"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
@@ -38,7 +41,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 1.2"
 
 # Tailwind CSS
 gem "tailwindcss-rails", "~> 3.3.1"

@@ -33,7 +33,7 @@ RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
 RUN --mount=type=cache,target=/var/cache/apt \
     for i in $(seq 1 3); do \
       (apt-get update -qq && \
-       apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 && \
+       apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 imagemagick && \
        exit 0) || if [ $i -eq 3 ]; then exit 1; fi; \
       echo "Retrying apt-get install... (attempt $i/3)"; \
       sleep 2; \
