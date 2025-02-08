@@ -52,12 +52,18 @@ class Admin::PostsController < ApplicationController
       content_type: image.content_type
     )
 
-    # 触发后台任务处理图片大小
-    ResizeImageJob.perform_later(blob)
+    # 返回 Markdown 格式的图片链接，使用 variant 处理图片
+    url = if blob.content_type.start_with?('image/')
+      variant = blob.variant(resize_to_limit: [1024, 1024]).processed
+      rails_blob_representation_path(variant, only_path: true)
+    else
+      rails_blob_path(blob, only_path: true)
+    end
 
-    # 返回 Markdown 格式的图片链接
-    url = Rails.application.routes.url_helpers.rails_blob_path(blob, only_path: true)
-    render json: { markdown: "![#{image.original_filename}](#{url})" }
+    render json: {
+      markdown: "![#{image.original_filename}](#{url})",
+      blob_signed_id: blob.signed_id
+    }
   end
 
   private
