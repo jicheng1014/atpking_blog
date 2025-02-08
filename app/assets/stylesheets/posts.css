@@ -23,3 +23,21 @@
 .prose br + br {
   display: none;
 }
+
+/* 拍立得风格的图片样式 */
+.prose img {
+  background: white;
+  padding: 15px;
+  padding-bottom: 50px; /* 底部留出更大的空白区域 */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  margin: 2rem auto;
+  max-width: 90%;
+  display: block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.prose img:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
