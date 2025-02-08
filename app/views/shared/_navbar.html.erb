@@ -1,5 +1,5 @@
 <!-- 导航栏 -->
-<nav class="bg-white shadow-sm">
+<nav class="bg-white shadow-sm" data-controller="mobile-menu">
   <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
     <div class="flex justify-between h-16">
       <div class="flex items-center">
@@ -9,7 +9,7 @@
           <span class="text-xl font-bold text-gray-900">3Q RUOK?</span>
         <% end %>
 
-        <!-- 主导航链接 -->
+        <!-- 主导航链接（桌面端） -->
         <div class="hidden space-x-8 sm:ml-10 sm:flex">
           <%= link_to '文章', root_path, class: nav_link_class(current_page?(posts_path)) %>
           <%= link_to '标签', tags_path, class: nav_link_class(current_page?(tags_path)) %>
@@ -19,12 +19,48 @@
 
       <!-- 右侧用户菜单 -->
       <div class="flex items-center">
+        <!-- 移动端菜单按钮 -->
+        <button type="button"
+                class="inline-flex items-center justify-center p-2 text-gray-400 rounded-md sm:hidden hover:text-gray-500 hover:bg-gray-100"
+                data-action="click->mobile-menu#toggle"
+                aria-expanded="false">
+          <span class="sr-only">打开菜单</span>
+          <!-- 菜单图标 -->
+          <svg class="block w-6 h-6" data-mobile-menu-target="openIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          <!-- 关闭图标 -->
+          <svg class="hidden w-6 h-6" data-mobile-menu-target="closeIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
         <% if current_user %>
-          <%= link_to '管理文章', admin_root_path, class: 'text-gray-500 hover:text-gray-700 mr-4' %>
-          <span class="mr-4 text-gray-500"><%= current_user.email %></span>
-          <%= button_to '退出', session_path, method: :delete, class: 'text-gray-500 hover:text-gray-700' %>
+          <div class="hidden sm:flex sm:items-center">
+            <%= link_to '管理文章', admin_root_path, class: 'text-gray-500 hover:text-gray-700 mr-4' %>
+            <span class="mr-4 text-gray-500"><%= current_user.email %></span>
+            <%= button_to '退出', session_path, method: :delete, class: 'text-gray-500 hover:text-gray-700' %>
+          </div>
         <% end %>
       </div>
     </div>
+  </div>
+
+  <!-- 移动端菜单面板 -->
+  <div class="hidden sm:hidden" data-mobile-menu-target="panel">
+    <div class="pt-2 pb-3 space-y-1">
+      <%= link_to '文章', root_path, class: mobile_nav_link_class(current_page?(posts_path)) %>
+      <%= link_to '标签', tags_path, class: mobile_nav_link_class(current_page?(tags_path)) %>
+      <%= link_to '关于', about_path, class: mobile_nav_link_class(current_page?(about_path)) if defined?(about_path) %>
+    </div>
+    <% if current_user %>
+      <div class="pt-4 pb-3 border-t border-gray-200">
+        <div class="space-y-1">
+          <%= link_to '管理文章', admin_root_path, class: mobile_nav_link_class(false) %>
+          <div class="px-4 py-2 text-base font-medium text-gray-500"><%= current_user.email %></div>
+          <%= button_to '退出', session_path, method: :delete, class: mobile_nav_link_class(false) %>
+        </div>
+      </div>
+    <% end %>
   </div>
 </nav>
