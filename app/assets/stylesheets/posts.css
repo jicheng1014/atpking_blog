@@ -26,7 +26,7 @@
 
 /* 拍立得风格的图片样式 */
 .prose img {
-  background: white;
+  background: #f7f7f7;
   padding: 15px;
   padding-bottom: 50px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);

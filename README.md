@@ -1,34 +1,33 @@
-# README
+# 3Q, Are you ok?
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
 
-* Ruby version
+这是一个基于 rails 8.0 的博客系统，使用 kamal 部署。
 
-* System dependencies
+目前 作者自己通过这个 blog 的地址是 [https://www.3qruok.com](https://www.3qruok.com)
 
-* Configuration
 
-* Database creation
+## 技术栈
 
-* Database initialization
+- ruby on rails 8 (base on ruby 3.2)
+- sqlite
+- solid_queue
+- kamal2
 
-* How to run the test suite
 
-* Services (job queues, cache servers, search engines, etc.)
+## 部署
 
-* Deployment instructions
+```bash
+kamal deploy
+```
 
-* ...
+部署后 是用 rails console 建立管理员用户
 
-## 部署说明
+```bash
+kamal console
 
-本项目使用 GitHub Actions 自动部署，当代码推送到 main 分支时会自动触发部署流程。
-
-测试自动部署功能 - 通过 GitHub Actions。
-
-测试新的 PEM 格式 SSH 密钥。
-
-测试添加 KAMAL_REGISTRY_PASSWORD。
+user = User.new
+user.email = 'admin@example.com'
+user.password = 'password'
+user.save!
+```
