@@ -1,27 +1,36 @@
 <%# @param post [Post] 要显示的文章对象 %>
 <article class="mb-6 overflow-hidden transition-all duration-300 ease-in-out transform bg-white rounded-lg hover:-translate-y-1 hover:shadow-lg">
   <div class="p-6">
-    <h2 class="mb-2 text-xl font-semibold">
-      <%= link_to post.title, post_path(post), class: "hover:text-blue-500 hover:decoration-dashed hover:underline hover:underline-offset-4" %>
-      <span class="ml-4 text-sm text-gray-300 shrink-0"><%= post.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <h2 class="mb-2 text-xl font-semibold">
+          <%= link_to post.title, post_path(post), class: "hover:text-blue-500 hover:decoration-dashed hover:underline hover:underline-offset-4" %>
+          <span class="ml-4 text-sm text-gray-300 shrink-0"><%= post.created_at.strftime("%Y-%m-%d %H:%M") %></span>
 
-      <% if post.created_at + 1.hours <=  post.updated_at %>
-        <span class="ml-4 text-sm text-gray-300 shrink-0">(<%= post.updated_at.strftime("%Y-%m-%d %H:%M") %>)</span>
-      <% end %>
-
-    </h2>
-    <div class="mb-4 prose text-gray-600 max-w-none"><%= truncate(strip_tags(post.rendered_content), length: 150) %></div>
-    <div class="flex items-center justify-between text-sm">
-      <div class="flex flex-wrap -ml-1">
-        <% post.tags.each do |tag| %>
-          <%= link_to posts_path(tag: tag.slug), class: "mr-3 mb-1 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200" do %>
-            <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
-            </svg>
-            <%= tag.name %>
+          <% if post.created_at + 1.hours <=  post.updated_at %>
+            <span class="ml-4 text-sm text-gray-300 shrink-0">(<%= post.updated_at.strftime("%Y-%m-%d %H:%M") %>)</span>
           <% end %>
-        <% end %>
+        </h2>
+        <div class="mb-4 prose text-gray-600 max-w-none"><%= truncate(strip_tags(post.rendered_content), length: 150) %></div>
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex flex-wrap -ml-1">
+            <% post.tags.each do |tag| %>
+              <%= link_to posts_path(tag: tag.slug), class: "mr-3 mb-1 inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200" do %>
+                <svg class="w-3 h-3 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                <%= tag.name %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
       </div>
+
+      <% if first_image = post.content.match(/!\[.*?\]\((.*?)\)/)&.captures&.first %>
+        <div class="ml-6 shrink-0">
+          <%= image_tag first_image, class: "w-24 h-24 object-contain rounded-lg shadow-sm", alt: post.title %>
+        </div>
+      <% end %>
     </div>
   </div>
 </article>
