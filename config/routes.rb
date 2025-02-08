@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :comments, only: [:create, :destroy]
     collection do
       get :feed, defaults: { format: 'rss' }
+      get 'tag/:tag', action: :index, as: :tag
     end
   end
 
