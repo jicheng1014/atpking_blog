@@ -60,10 +60,10 @@ class Admin::PostsController < ApplicationController
   private
 
   def set_post
-    @post = current_user.posts.find(params[:id])
+    @post = current_user.posts.friendly.find(params[:id])
   end
 
   def post_params
-    params.require(:post).permit(:title, :content, :status, :tag_list)
+    params.require(:post).permit(*Post.permitted_attributes)
   end
 end

@@ -13,7 +13,7 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.published.find(params[:id])
+    @post = Post.published.friendly.find(params[:id])
     @comment = Comment.new
     @comments = @post.comments.includes(:user).order(created_at: :desc)
   end
@@ -23,5 +23,11 @@ class PostsController < ApplicationController
     respond_to do |format|
       format.rss { render layout: false }
     end
+  end
+
+  private
+
+  def set_post
+    @post = Post.friendly.find(params[:id])
   end
 end
