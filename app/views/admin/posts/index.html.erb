@@ -16,6 +16,7 @@
             <tr>
               <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">标题</th>
               <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">状态</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">tags</th>
               <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">创建时间</th>
               <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                 <span class="sr-only">操作</span>
@@ -33,6 +34,11 @@
                     <%= post.status == 'published' ? '已发布' : '草稿' %>
                   </span>
                 </td>
+
+                <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                  <%= post.tags.map(&:name).join(', ') %>
+                </td>
+
                 <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
                   <%= post.created_at.strftime("%Y-%m-%d %H:%M") %>
                 </td>

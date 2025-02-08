@@ -61,6 +61,7 @@ RUN bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 RUN gem install tailwindcss-rails
+
 # Copy application code
 COPY . .
 

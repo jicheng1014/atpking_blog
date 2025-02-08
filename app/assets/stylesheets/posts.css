@@ -28,10 +28,10 @@
 .prose img {
   background: white;
   padding: 15px;
-  padding-bottom: 50px; /* 底部留出更大的空白区域 */
+  padding-bottom: 50px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   border-radius: 3px;
-  margin: 2rem auto;
+  margin: 2rem 0rem;
   max-width: 90%;
   display: block;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
