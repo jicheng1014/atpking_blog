@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   # 管理界面路由，需要登录
   namespace :admin do
+    get "settings/edit", to: 'settings#edit', as: :settings
+    patch "settings/update", to: 'settings#update'
     root to: "posts#index"
     resources :posts do
       collection do

@@ -1,7 +1,5 @@
-class Admin::PostsController < ApplicationController
-  before_action :authenticated?
+class Admin::PostsController < Admin::ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
-  layout 'admin'
 
   def index
     @posts = current_user.posts.order(created_at: :desc)

@@ -49,6 +49,12 @@
 
       <div class="prose prose-lg max-w-none">
         <%= raw @post.rendered_content %>
+
+        <% if Setting.post_signature.present? %>
+          <div class="p-4 mt-8 border-t border-gray-200">
+            <%= raw Setting.post_signature %>
+          </div>
+        <% end %>
       </div>
 
 
