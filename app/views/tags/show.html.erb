@@ -1,0 +1,29 @@
+<div class="py-10">
+  <header>
+    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+          标签：<%= @tag.name %>
+        </h1>
+        <%= link_to '返回标签列表', tags_path, class: 'text-sm text-blue-600 hover:text-blue-800' %>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="px-4 py-8 sm:px-0">
+        <% if @posts.any? %>
+          <div class="space-y-8">
+            <% @posts.each do |post| %>
+              <%= render 'posts/article_preview', post: post %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="p-4 text-center text-gray-500 bg-gray-50 rounded-lg">
+            暂无文章
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </main>
+</div>
