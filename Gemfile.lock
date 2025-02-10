@@ -417,7 +417,6 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
-  mini_magick
   mission_control-jobs
   propshaft
   puma (>= 5.0)
