@@ -15,7 +15,7 @@ servers:
 #
 # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
-  ssl: false
+  ssl: true
   host: www.3qruok.com
   # 修改 80 443 为 8090 8443
 
