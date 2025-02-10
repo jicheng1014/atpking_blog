@@ -51,7 +51,7 @@
         <%= raw @post.rendered_content %>
 
         <% if Setting.post_signature.present? %>
-          <div class="p-4 mt-8 border-t border-gray-200">
+          <div class="py-4 mt-8 text-sm font-light text-gray-400 border-t border-gray-200">
             <%= raw Setting.post_signature %>
           </div>
         <% end %>
