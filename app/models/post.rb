@@ -22,8 +22,16 @@ class Post < ApplicationRecord
     [:title, :content, :status, :tag_list, :custom_slug]
   end
 
-  scope :published, -> { where(status: 'published') }
-  scope :drafts, -> { where(status: 'draft') }
+  scope :status_published, -> { where(status: 'published') }
+  scope :status_drafts, -> { where(status: 'draft') }
+
+  def published?
+    status == 'published'
+  end
+
+  def draft?
+    status == 'draft'
+  end
 
   def slug_candidates
     custom_slug.presence || pinyin_title

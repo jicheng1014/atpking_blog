@@ -19,6 +19,6 @@ class TagsController < ApplicationController
 
   def show
     @tag = Tag.friendly.find(params[:id])
-    @posts = @tag.posts.published.order(created_at: :desc)
+    @posts = @tag.posts.status_published.order(created_at: :desc)
   end
 end
