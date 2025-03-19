@@ -44,7 +44,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # Tailwind CSS
-gem "tailwindcss-rails", "~> 3.3.1"
+gem "tailwindcss-rails", "~> 4.2.1"
 
 # Markdown support
 gem "redcarpet"
