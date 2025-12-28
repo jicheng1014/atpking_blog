@@ -76,6 +76,11 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  # 使用国内 Docker Hub 镜像加速器（Dockerfile 中已配置），无需代理配置
+  # args:
+  #   HTTP_PROXY: "http://192.168.2.1:1081"
+  #   HTTPS_PROXY: "http://192.168.2.1:1081"
+  #   NO_PROXY: "localhost,127.0.0.1,registry.cn-guangzhou.aliyuncs.com"
   # retries: 3
   # network: host
   # args:
