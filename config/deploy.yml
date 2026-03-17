@@ -1,6 +1,13 @@
 # Name of your application. Used to uniquely configure containers.
 service: atpking_blog
 
+# # 1. 指定架构拉取对应版本的镜像 (非常重要！否则服务器跑不起来)
+# docker pull --platform linux/amd64 basecamp/kamal-proxy:v0.9.0
+
+# # 2. 将镜像保存并直接通过 SSH 管道流式传输到国内服务器并加载
+# # (这一行命令直接完成了打包、传输、解包，不需要中间文件)
+# docker save basecamp/kamal-proxy:v0.9.0 | ssh root@8.134.169.142 "docker load"
+
 # Name of the container image.
 image: jicheng1014/atpking_blog
 
@@ -76,6 +83,7 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
+  #remote: ssh://root@bwg4:27278
   # 使用国内 Docker Hub 镜像加速器（Dockerfile 中已配置），无需代理配置
   # args:
   #   HTTP_PROXY: "http://192.168.2.1:1081"
