@@ -13,19 +13,19 @@ FROM library/ruby:$RUBY_VERSION-slim AS base
 WORKDIR /rails
 
 # Configure apt and gem sources based on environment variable
-ARG USE_CN_MIRRORS=true
-RUN if [ "$USE_CN_MIRRORS" = "true" ]; then \
-      cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-      sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-      sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
-      gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/ && \
-      bundle config mirror.https://rubygems.org https://gems.ruby-china.com; \
-    fi
+#ARG USE_CN_MIRRORS=false
+#RUN if [ "$USE_CN_MIRRORS" = "true" ]; then \
+#      cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
+#      sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+#      sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+#      gem sources --add https://gems.ruby-china.com/ --remove https://rubygems.org/ && \
+#      bundle config mirror.https://rubygems.org https://gems.ruby-china.com; \
+#    fi
 
 # Configure apt for better network resilience
-RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::http::Timeout "120";' > /etc/apt/apt.conf.d/99timeout && \
-    echo 'Acquire::https::Timeout "120";' >> /etc/apt/apt.conf.d/99timeout
+#RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+#    echo 'Acquire::http::Timeout "120";' > /etc/apt/apt.conf.d/99timeout && \
+#    echo 'Acquire::https::Timeout "120";' >> /etc/apt/apt.conf.d/99timeout
 
 # Install base packages
 RUN --mount=type=cache,target=/var/cache/apt \

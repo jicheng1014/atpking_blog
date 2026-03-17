@@ -84,6 +84,7 @@ asset_path: /rails/public/assets
 builder:
   arch: amd64
   #remote: ssh://root@bwg4:27278
+  driver: docker
   # 使用国内 Docker Hub 镜像加速器（Dockerfile 中已配置），无需代理配置
   # args:
   #   HTTP_PROXY: "http://192.168.2.1:1081"
