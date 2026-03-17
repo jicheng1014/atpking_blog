@@ -1,30 +1,97 @@
-<div class="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
-  <div class="flex items-center justify-between mb-8">
-    <h1 class="text-3xl font-bold">
-      <% if @tag %>
-        标签：<%= @tag.name %>
-      <% else %>
-        文章
-      <% end %>
-    </h1>
-    <% if current_user %>
-      <%= link_to '写新文章', new_admin_post_path, class: 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md' %>
-    <% end %>
-  </div>
-  <div class="mb-8">
-    <% if @tag %>
-      <p>
-        显示标签为 "<%= @tag.name %>" 的文章
-        <%= link_to '查看全部文章', posts_path, class: 'text-blue-500 hover:text-blue-700' %>
-      </p>
-    <% else %>
-      <p>这里记录了我的点点滴滴</p>
-    <% end %>
-  </div>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
 
-  <div class="">
-    <% @posts.each do |post| %>
-      <%= render 'article_preview', post: post %>
+  <%# 未过滤时的站点介绍 %>
+  <% unless @tag %>
+    <div class="mb-10">
+      <h1 class="text-xl font-semibold text-stone-900 mb-1">
+        <%= Setting.site_name.presence || '3Q RUOK?' %>
+      </h1>
+      <p class="text-sm text-stone-400">记录点点滴滴</p>
+    </div>
+  <% end %>
+
+  <%# Tag 过滤条 %>
+  <% if @all_tags.any? %>
+    <div class="flex flex-wrap gap-2 mb-10">
+      <%= link_to root_path,
+            class: "px-3 py-1 rounded-full text-xs font-medium transition-colors #{@tag.nil? ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}" do %>
+        全部
+      <% end %>
+      <% @all_tags.each do |tag| %>
+        <%= link_to tag_posts_path(tag: tag.slug),
+              class: "px-3 py-1 rounded-full text-xs font-medium transition-colors #{@tag&.id == tag.id ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}" do %>
+          <%= tag.name %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# 当前 tag 标题 %>
+  <% if @tag %>
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="text-base font-medium text-stone-700">
+        <span class="text-stone-400 font-normal">标签 /</span> <%= @tag.name %>
+      </h2>
+      <%= link_to '← 全部文章', root_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" %>
+    </div>
+  <% end %>
+
+  <%# 文章列表（按年份分组）%>
+  <% if @posts.empty? %>
+    <div class="text-sm text-stone-400 text-center py-16">暂无文章</div>
+  <% else %>
+    <% @posts.group_by { |p| p.created_at.year }.each do |year, year_posts| %>
+      <%# 年份分隔线 %>
+      <div class="flex items-center gap-3 mb-2 mt-8 first:mt-0">
+        <span class="text-xs font-medium text-stone-400 tabular-nums"><%= year %></span>
+        <div class="flex-1 h-px bg-stone-200"></div>
+        <% if current_user && year == @posts.first&.created_at&.year %>
+          <%= link_to '写文章', new_admin_post_path, class: "text-xs text-stone-400 hover:text-amber-600 transition-colors" %>
+        <% end %>
+      </div>
+
+      <% year_posts.each do |post| %>
+        <%= render 'article_preview', post: post %>
+      <% end %>
     <% end %>
-  </div>
+
+    <%# 分页 %>
+    <% if @pagy.pages > 1 %>
+      <div class="flex items-center justify-center gap-1 mt-10 pt-6 border-t border-stone-100">
+        <% if @pagy.prev %>
+          <%= link_to @pagy.prev == 1 ? root_path : url_for(page: @pagy.prev),
+                class: "px-3 py-1.5 text-xs text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors" do %>
+            ← 上一页
+          <% end %>
+        <% else %>
+          <span class="px-3 py-1.5 text-xs text-stone-200 cursor-default">← 上一页</span>
+        <% end %>
+
+        <div class="flex items-center gap-1 mx-2">
+          <% (1..@pagy.pages).each do |page| %>
+            <% if page == @pagy.page %>
+              <span class="w-7 h-7 flex items-center justify-center text-xs font-medium bg-stone-800 text-white rounded-full"><%= page %></span>
+            <% elsif (@pagy.page - page).abs <= 2 || page == 1 || page == @pagy.pages %>
+              <%= link_to page == 1 ? root_path : url_for(page: page),
+                    class: "w-7 h-7 flex items-center justify-center text-xs text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-full transition-colors" do %>
+                <%= page %>
+              <% end %>
+            <% elsif (@pagy.page - page).abs == 3 %>
+              <span class="text-xs text-stone-200 px-1">…</span>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @pagy.next %>
+          <%= link_to url_for(page: @pagy.next),
+                class: "px-3 py-1.5 text-xs text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors" do %>
+            下一页 →
+          <% end %>
+        <% else %>
+          <span class="px-3 py-1.5 text-xs text-stone-200 cursor-default">下一页 →</span>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
 </div>

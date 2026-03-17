@@ -1,25 +1,22 @@
-<div class="py-10">
-  <header>
-    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">标签列表</h1>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
+
+  <div class="mb-10">
+    <h1 class="text-xl font-semibold text-stone-900 mb-1">标签</h1>
+    <p class="text-sm text-stone-400">按主题浏览所有文章</p>
+  </div>
+
+  <% if @tags.any? %>
+    <div class="flex flex-wrap gap-3">
+      <% @tags.each do |tag| %>
+        <%= link_to tag_path(tag),
+              class: "group inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-200 rounded-full text-sm text-stone-600 hover:border-amber-300 hover:text-amber-700 hover:bg-amber-50 transition-colors" do %>
+          <span class="font-medium"><%= tag.name %></span>
+          <span class="text-xs text-stone-300 group-hover:text-amber-400 transition-colors"><%= tag.posts_count %></span>
+        <% end %>
+      <% end %>
     </div>
-  </header>
-  <main>
-    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div class="px-4 py-8 sm:px-0">
-        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          <% @tags.each do |tag| %>
-            <%= link_to tag_path(tag), class: "group" do %>
-              <div class="p-4 transition-all duration-200 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md hover:border-blue-500">
-                <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600"><%= tag.name %></h3>
-                <p class="mt-1 text-sm text-gray-500">
-                  <%= pluralize(tag.posts_count, '篇文章') %>
-                </p>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </main>
+  <% else %>
+    <p class="text-sm text-stone-400">暂无标签</p>
+  <% end %>
+
 </div>

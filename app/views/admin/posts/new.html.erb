@@ -1,4 +1,10 @@
-<div class="max-w-4xl px-4 py-8 mx-auto sm:px-6 lg:px-8">
-  <h1 class="mb-8 text-3xl font-bold">新建文章</h1>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-center gap-2 mb-8">
+    <%= link_to admin_posts_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" do %>
+      ← 文章列表
+    <% end %>
+    <span class="text-stone-200 text-xs">/</span>
+    <span class="text-xs text-stone-500">新建文章</span>
+  </div>
   <%= render 'form', post: @post %>
 </div>

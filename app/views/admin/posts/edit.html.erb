@@ -1,7 +1,17 @@
-<div class="max-w-4xl px-4 py-8 mx-auto sm:px-6 lg:px-8">
-  <h1 class="mb-8 text-3xl font-bold">编辑文章</h1>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center gap-2">
+      <%= link_to admin_posts_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" do %>
+        ← 文章列表
+      <% end %>
+      <span class="text-stone-200 text-xs">/</span>
+      <span class="text-xs text-stone-500 truncate max-w-xs"><%= @post.title %></span>
+    </div>
+    <%= link_to '查看', post_path(@post), target: '_blank',
+          class: "text-xs text-stone-400 hover:text-stone-600 transition-colors border border-stone-200 px-2.5 py-1 rounded-full" %>
+  </div>
   <%= render 'form', post: @post %>
 </div>
 
-<%# 添加 TailwindCSS Typography 样式支持 Markdown 渲染 %>
+<%# TailwindCSS Typography 支持预览区 Markdown 渲染 %>
 <%= stylesheet_link_tag "https://cdn.jsdelivr.net/npm/@tailwindcss/typography@0.5.10/dist/typography.min.css" %>

@@ -1,56 +1,65 @@
-<div class="sm:flex sm:items-center">
-  <div class="sm:flex-auto">
-    <h1 class="text-2xl font-semibold text-gray-900">文章管理</h1>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-base font-semibold text-stone-800">文章</h1>
+    <%= link_to '+ 写新文章', new_admin_post_path,
+          class: "text-xs px-3 py-1.5 bg-stone-800 text-white rounded-full hover:bg-stone-700 transition-colors" %>
   </div>
-  <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-    <%= link_to '写新文章', new_admin_post_path, class: "inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:w-auto" %>
-  </div>
-</div>
 
-<div class="flex flex-col mt-8">
-  <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-    <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-      <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-        <table class="min-w-full divide-y divide-gray-300">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">标题</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">状态</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">tags</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">创建时间</th>
-              <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
-                <span class="sr-only">操作</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <% @posts.each do |post| %>
-              <tr>
-                <td class="py-4 pl-4 pr-3 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-6">
-                  <%= link_to post.title, post_path(post), class: "hover:text-blue-600" %>
-                </td>
-                <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <span class="<%= post.status == 'published' ? 'text-green-600' : 'text-yellow-600' %>">
-                    <%= post.status == 'published' ? '已发布' : '草稿' %>
-                  </span>
-                </td>
-
-                <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <%= post.tags.map(&:name).join(', ') %>
-                </td>
-
-                <td class="px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
-                  <%= post.created_at.strftime("%Y-%m-%d %H:%M") %>
-                </td>
-                <td class="relative py-4 pl-3 pr-4 text-sm font-medium text-right whitespace-nowrap sm:pr-6">
-                  <%= link_to '编辑', edit_admin_post_path(post), class: "text-blue-600 hover:text-blue-900" %>
-                  <%= button_to '删除', admin_post_path(post), method: :delete, class: "ml-3 text-red-600 hover:text-red-900", form: { data: { turbo_confirm: '确定要删除这篇文章吗？' } } %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
+  <% if @posts.empty? %>
+    <div class="text-sm text-stone-400 text-center py-20">还没有文章，开始写第一篇吧</div>
+  <% else %>
+    <%# 按年份分组 %>
+    <% @posts.group_by { |p| p.created_at.year }.each do |year, year_posts| %>
+      <div class="flex items-center gap-3 mb-2 mt-8 first:mt-0">
+        <span class="text-xs font-medium text-stone-400 tabular-nums"><%= year %></span>
+        <div class="flex-1 h-px bg-stone-200"></div>
       </div>
-    </div>
-  </div>
+
+      <% year_posts.each do |post| %>
+        <div class="group flex items-start gap-4 sm:gap-6 py-3.5 border-b border-stone-100 last:border-0">
+
+          <%# 日期 %>
+          <div class="hidden sm:block text-xs text-stone-300 tabular-nums pt-0.5 w-12 shrink-0 text-right">
+            <%= post.created_at.strftime("%m/%d") %>
+          </div>
+
+          <%# 内容 %>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-4">
+              <div class="min-w-0">
+                <span class="text-sm font-medium text-stone-800 leading-snug">
+                  <%= link_to post.title, post_path(post), target: '_blank',
+                        class: "hover:text-amber-700 transition-colors" %>
+                </span>
+                <% if post.tags.any? %>
+                  <span class="ml-2 text-xs text-stone-300"><%= post.tags.map(&:name).join(' · ') %></span>
+                <% end %>
+              </div>
+
+              <%# 状态 + 操作（hover 显示） %>
+              <div class="flex items-center gap-3 shrink-0">
+                <span class="text-xs <%= post.published? ? 'text-emerald-500' : 'text-amber-400' %>">
+                  <%= post.published? ? '已发布' : '草稿' %>
+                </span>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                  <%= link_to '编辑', edit_admin_post_path(post),
+                        class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" %>
+                  <%= button_to '删除', admin_post_path(post), method: :delete,
+                        class: "text-xs text-stone-300 hover:text-red-400 transition-colors cursor-pointer",
+                        form: { data: { turbo_confirm: '确定删除《' + post.title + '》？' } } %>
+                </div>
+              </div>
+            </div>
+
+            <div class="sm:hidden text-xs text-stone-300 mt-0.5 tabular-nums">
+              <%= post.created_at.strftime("%m/%d") %>
+            </div>
+          </div>
+
+        </div>
+      <% end %>
+    <% end %>
+  <% end %>
+
 </div>

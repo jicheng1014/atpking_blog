@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-full bg-gray-50">
+<html class="h-full bg-stone-50">
   <head>
     <%= render 'shared/google_analytics' %>
     <title><%= Setting.site_name.presence || 'My Blog' %></title>
@@ -11,7 +11,6 @@
 
     <%= auto_discovery_link_tag :rss, feed_posts_url(format: :rss), title: "RSS Feed" %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <!-- Favicons -->
@@ -19,40 +18,36 @@
     <%= favicon_link_tag 'favicons/favicon-32x32.png', sizes: '32x32', type: 'image/png' %>
     <%= favicon_link_tag 'favicons/apple-touch-icon.png', rel: 'apple-touch-icon', type: 'image/png' %>
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= yield :styles %>
   </head>
 
-  <body class="h-full">
-    <div class="min-h-full">
-      <%= render 'shared/navbar' %>
+  <body class="h-full antialiased text-stone-800">
+    <%= render 'shared/navbar' %>
 
-      <!-- 提示信息 -->
-      <% if notice %>
-        <div class="px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
-          <div class="p-4 text-green-700 rounded-md bg-green-50">
-            <%= notice %>
-          </div>
+    <% if notice %>
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 mt-4">
+        <div class="px-4 py-3 text-sm text-emerald-700 bg-emerald-50 rounded-lg border border-emerald-100">
+          <%= notice %>
         </div>
-      <% end %>
+      </div>
+    <% end %>
 
-      <% if alert %>
-        <div class="px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
-          <div class="p-4 text-red-700 rounded-md bg-red-50">
-            <%= alert %>
-          </div>
+    <% if alert %>
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 mt-4">
+        <div class="px-4 py-3 text-sm text-red-700 bg-red-50 rounded-lg border border-red-100">
+          <%= alert %>
         </div>
-      <% end %>
+      </div>
+    <% end %>
 
-      <!-- 主要内容 -->
-      <main>
-        <%= yield %>
-      </main>
-    </div>
-    <footer class="mt-auto py-4 text-center text-gray-600 text-sm">
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer class="mt-16 pb-10 text-center text-stone-400 text-xs">
       <% if Setting.icp_number.present? %>
         <div><%= Setting.icp_number %></div>
       <% end %>

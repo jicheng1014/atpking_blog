@@ -1,7 +1,14 @@
-<%= form_with(model: [:admin, post], class: "space-y-6", data: { controller: "draft-storage", action: "submit->draft-storage#handleSubmit", draft_storage_post_id_value: post.id || 'new', draft_storage_post_updated_at_value: (post.updated_at&.to_f || Time.current.to_f) * 1000 }) do |f| %>
+<%= form_with(model: [:admin, post], class: "space-y-5",
+      data: {
+        controller: "draft-storage",
+        action: "submit->draft-storage#handleSubmit",
+        draft_storage_post_id_value: post.id || 'new',
+        draft_storage_post_updated_at_value: (post.updated_at&.to_f || Time.current.to_f) * 1000
+      }) do |f| %>
+
   <% if post.errors.any? %>
-    <div class="p-4 mb-6 text-red-500 rounded-md bg-red-50">
-      <ul class="list-disc list-inside">
+    <div class="px-4 py-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100">
+      <ul class="space-y-0.5">
         <% post.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -9,91 +16,103 @@
     </div>
   <% end %>
 
+  <%# 标题 %>
   <div>
-    <%= f.label :title, '标题', class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.text_field :title, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+    <%= f.text_field :title,
+          placeholder: "文章标题",
+          class: "w-full text-xl font-semibold text-stone-800 bg-transparent border-0 border-b border-stone-200 rounded-none px-0 py-2 focus:outline-none focus:border-stone-400 focus:ring-0 placeholder-stone-300 transition-colors" %>
   </div>
 
-  <div>
-    <%= f.label :custom_slug, '自定义链接（可选，留空将使用标题拼音）', class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.text_field :custom_slug, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", placeholder: "例如：my-first-post" %>
-    <p class="mt-1 text-sm text-gray-500">只能使用小写字母、数字和连字符</p>
-  </div>
-
-  <div>
-    <%= f.label :tag_list, '标签（用逗号分隔）', class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.text_field :tag_list, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500", placeholder: "例如：Ruby, Rails, 编程" %>
-  </div>
-
-  <div data-controller="markdown-editor paste-image"
-       class="space-y-4">
-    <div class="flex items-center justify-between mb-2">
-      <%= f.label :content, '内容', class: "block text-sm font-medium text-gray-700" %>
-      <div class="text-sm text-gray-500" data-draft-storage-target="autoSaveStatus"></div>
+  <%# 元数据行：slug、tags、状态 %>
+  <div class="flex flex-wrap items-end gap-4 pb-4 border-b border-stone-100">
+    <div class="flex-1 min-w-48">
+      <%= f.label :tag_list, '标签', class: "block text-xs text-stone-400 mb-1" %>
+      <%= f.text_field :tag_list,
+            placeholder: "Ruby, Rails, 随笔",
+            class: "w-full text-sm bg-stone-50 border border-stone-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-300 focus:border-amber-300 placeholder-stone-300 transition" %>
     </div>
 
-    <div class="border rounded-md">
-      <div class="border-b">
-        <nav class="flex -mb-px" aria-label="Tabs">
-          <button type="button"
-                  class="px-4 py-2 text-sm font-medium transition-colors duration-200 border-b-2"
-                  data-markdown-editor-target="editorTab"
-                  data-action="click->markdown-editor#switchToEditor">
-            编辑
-          </button>
-          <button type="button"
-                  class="px-4 py-2 text-sm font-medium transition-colors duration-200 border-b-2"
-                  data-markdown-editor-target="previewTab"
-                  data-action="click->markdown-editor#switchToPreview">
-            预览
-          </button>
-        </nav>
+    <div class="w-40">
+      <%= f.label :custom_slug, '自定义链接', class: "block text-xs text-stone-400 mb-1" %>
+      <%= f.text_field :custom_slug,
+            placeholder: "my-post-slug",
+            class: "w-full text-sm bg-stone-50 border border-stone-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-300 focus:border-amber-300 placeholder-stone-300 transition" %>
+    </div>
+
+    <div class="w-28">
+      <%= f.label :status, '状态', class: "block text-xs text-stone-400 mb-1" %>
+      <%= f.select :status,
+            options_for_select([['草稿', 'draft'], ['发布', 'published']], post.status),
+            {},
+            class: "w-full text-sm bg-stone-50 border border-stone-200 rounded-md px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-amber-300 focus:border-amber-300 transition" %>
+    </div>
+  </div>
+
+  <%# Markdown 编辑器 %>
+  <div data-controller="markdown-editor paste-image">
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center gap-0 border border-stone-200 rounded-md overflow-hidden">
+        <button type="button"
+                class="px-3 py-1.5 text-xs font-medium transition-colors"
+                data-markdown-editor-target="editorTab"
+                data-action="click->markdown-editor#switchToEditor">
+          编辑
+        </button>
+        <button type="button"
+                class="px-3 py-1.5 text-xs font-medium transition-colors border-l border-stone-200"
+                data-markdown-editor-target="previewTab"
+                data-action="click->markdown-editor#switchToPreview">
+          预览
+        </button>
       </div>
+      <div class="text-xs text-stone-300" data-draft-storage-target="autoSaveStatus"></div>
+    </div>
 
-      <div class="relative editor-wrapper" style="min-height: 500px">
-        <div class="relative h-full">
-          <%= f.text_area :content,
-              rows: 20,
-              class: "w-full p-4 border-0 rounded-none focus:ring-0 leading-relaxed",
-              style: "min-height: 500px; resize: vertical; line-height: 1.8;",
-              data: {
-                paste_image_target: "editor",
-                markdown_editor_target: "editor",
-                draft_storage_target: "editor",
-                action: "input->markdown-editor#updatePreview keydown->draft-storage#handleKeydown paste->paste-image#handlePaste dragover->paste-image#handleDragOver drop->paste-image#handleDrop"
-              } %>
-        </div>
+    <div class="border border-stone-200 rounded-lg overflow-hidden bg-white">
+      <div class="relative editor-wrapper" style="min-height: 520px">
 
-        <div class="absolute inset-0 hidden p-4 overflow-y-auto prose-sm prose bg-white max-w-none"
-             style="top: 0; bottom: 52px;"
+        <%# 编辑区 %>
+        <%= f.text_area :content,
+            rows: 24,
+            class: "w-full px-4 py-4 border-0 focus:ring-0 text-sm text-stone-700 leading-relaxed font-mono bg-white resize-none",
+            style: "min-height: 520px; line-height: 1.8;",
+            data: {
+              paste_image_target: "editor",
+              markdown_editor_target: "editor",
+              draft_storage_target: "editor",
+              action: "input->markdown-editor#updatePreview keydown->draft-storage#handleKeydown paste->paste-image#handlePaste dragover->paste-image#handleDragOver drop->paste-image#handleDrop"
+            } %>
+
+        <%# 预览区 %>
+        <div class="absolute inset-0 hidden px-4 py-4 overflow-y-auto prose prose-stone prose-sm max-w-none bg-white"
+             style="top: 0; bottom: 44px;"
              data-markdown-editor-target="preview">
         </div>
 
-        <div class="absolute bottom-0 left-0 right-0 z-10 flex items-center justify-between p-2 border-t bg-gray-50">
-          <label class="inline-flex items-center gap-2 px-3 py-1 text-sm font-medium text-gray-600 transition-colors rounded-md cursor-pointer hover:text-gray-900 hover:bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <%# 底部工具栏 %>
+        <div class="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 py-2 border-t border-stone-100 bg-stone-50">
+          <label class="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-600 cursor-pointer transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            <span>插入图片</span>
-            <input type="file"
-                   class="hidden"
-                   accept="image/*"
+            插入图片
+            <input type="file" class="hidden" accept="image/*"
                    data-paste-image-target="fileInput"
                    data-action="change->paste-image#handleFileSelect">
           </label>
-          <div class="text-xs text-gray-500" data-draft-storage-target="lastSaveTime"></div>
+          <div class="text-xs text-stone-300" data-draft-storage-target="lastSaveTime"></div>
         </div>
+
       </div>
     </div>
   </div>
 
-  <div>
-    <%= f.label :status, '状态', class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.select :status, options_for_select([['草稿', 'draft'], ['发布', 'published']], post.status), {}, class: "w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" %>
+  <%# 提交按钮 %>
+  <div class="flex items-center justify-end gap-3 pt-2">
+    <%= link_to '取消', admin_posts_path,
+          class: "text-sm text-stone-400 hover:text-stone-600 transition-colors" %>
+    <%= f.submit post.new_record? ? '创建文章' : '保存更改',
+          class: "text-sm px-5 py-2 bg-stone-800 text-white rounded-full hover:bg-stone-700 cursor-pointer transition-colors" %>
   </div>
 
-  <div class="flex justify-end gap-4">
-    <%= link_to '取消', admin_posts_path, class: "px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50" %>
-    <%= f.submit post.new_record? ? '创建' : '更新', class: "px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600" %>
-  </div>
 <% end %>

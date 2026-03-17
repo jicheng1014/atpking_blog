@@ -1,29 +1,27 @@
-<div class="py-10">
-  <header>
-    <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between">
-        <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-          标签：<%= @tag.name %>
-        </h1>
-        <%= link_to '返回标签列表', tags_path, class: 'text-sm text-blue-600 hover:text-blue-800' %>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
+
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <div class="text-xs text-stone-400 mb-0.5">
+        <%= link_to '标签', tags_path, class: "hover:text-stone-600 transition-colors" %> /
       </div>
+      <h1 class="text-xl font-semibold text-stone-900"><%= @tag.name %></h1>
     </div>
-  </header>
-  <main>
-    <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-      <div class="px-4 py-8 sm:px-0">
-        <% if @posts.any? %>
-          <div class="space-y-8">
-            <% @posts.each do |post| %>
-              <%= render 'posts/article_preview', post: post %>
-            <% end %>
-          </div>
-        <% else %>
-          <div class="p-4 text-center text-gray-500 bg-gray-50 rounded-lg">
-            暂无文章
-          </div>
-        <% end %>
+    <%= link_to '← 全部文章', root_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" %>
+  </div>
+
+  <% if @posts.any? %>
+    <% @posts.group_by { |p| p.created_at.year }.each do |year, year_posts| %>
+      <div class="flex items-center gap-3 mb-2 mt-8 first:mt-0">
+        <span class="text-xs font-medium text-stone-400 tabular-nums"><%= year %></span>
+        <div class="flex-1 h-px bg-stone-200"></div>
       </div>
-    </div>
-  </main>
+      <% year_posts.each do |post| %>
+        <%= render 'posts/article_preview', post: post %>
+      <% end %>
+    <% end %>
+  <% else %>
+    <p class="text-sm text-stone-400 text-center py-16">该标签下暂无文章</p>
+  <% end %>
+
 </div>
