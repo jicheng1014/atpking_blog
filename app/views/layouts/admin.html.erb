@@ -30,6 +30,8 @@
             <div class="hidden sm:flex items-center gap-5">
               <%= link_to '文章', admin_posts_path,
                     class: "text-sm transition-colors #{controller_name == 'posts' ? 'text-stone-900 font-medium' : 'text-stone-400 hover:text-stone-700'}" %>
+              <%= link_to '灵感', admin_thoughts_path,
+                    class: "text-sm transition-colors #{controller_name == 'thoughts' ? 'text-stone-900 font-medium' : 'text-stone-400 hover:text-stone-700'}" %>
               <%= link_to '设置', admin_settings_path,
                     class: "text-sm transition-colors #{controller_name == 'settings' ? 'text-stone-900 font-medium' : 'text-stone-400 hover:text-stone-700'}" %>
               <%= link_to '队列', admin_mission_control_jobs_path,

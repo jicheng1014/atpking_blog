@@ -2,7 +2,7 @@ class Admin::PostsController < Admin::ApplicationController
   before_action :set_post, only: [:show, :edit, :update, :destroy]
 
   def index
-    @posts = current_user.posts.order(created_at: :desc)
+    @posts = current_user.posts.only_posts.order(created_at: :desc)
   end
 
   def show

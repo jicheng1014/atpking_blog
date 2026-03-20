@@ -1,0 +1,55 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
+
+  <%# 顶部导航 %>
+  <div class="flex items-center justify-between mb-10">
+    <%= link_to thoughts_path, class: "inline-flex items-center gap-1 text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      所有灵感
+    <% end %>
+
+    <% if current_user && @thought.user_id == current_user.id %>
+      <%= link_to edit_admin_thought_path(@thought),
+            class: "text-xs text-stone-400 hover:text-stone-700 transition-colors border border-stone-200 px-2.5 py-1 rounded-full" do %>
+        编辑
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# 元信息 %>
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6">
+    <time class="text-xs text-stone-400 tabular-nums" datetime="<%= @thought.created_at.iso8601 %>">
+      <%= @thought.created_at.strftime("%Y年%-m月%-d日 %H:%M") %>
+    </time>
+    <% if @thought.tags.any? %>
+      <span class="text-stone-200 text-xs">|</span>
+      <div class="flex flex-wrap gap-1.5">
+        <% @thought.tags.each do |tag| %>
+          <span class="text-xs px-2 py-0.5 bg-amber-50 text-amber-600 rounded border border-amber-100">
+            <%= tag.name %>
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# 内容 %>
+  <div class="prose prose-stone prose-sm sm:prose max-w-none
+              prose-headings:font-semibold prose-headings:text-stone-800
+              prose-a:text-amber-700 prose-a:no-underline hover:prose-a:underline
+              prose-blockquote:border-amber-300 prose-blockquote:text-stone-500
+              prose-code:text-stone-700 prose-code:bg-stone-100 prose-code:px-1 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+              prose-img:max-w-[280px] prose-img:rounded-md">
+    <%= raw @thought.rendered_content %>
+  </div>
+
+  <%# 底部 %>
+  <div class="mt-12 pt-6 border-t border-stone-100 flex items-center justify-between">
+    <%= link_to thoughts_path, class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
+      ← 所有灵感
+    <% end %>
+    <a href="#" class="text-xs text-stone-300 hover:text-stone-500 transition-colors">↑ 回到顶部</a>
+  </div>
+
+</div>

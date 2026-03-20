@@ -9,7 +9,7 @@ class Post < ApplicationRecord
   has_many :tags, through: :post_tags
   has_many_attached :images
 
-  validates :title, presence: true
+  validates :title, presence: true, unless: :thought?
   validates :content, presence: true
   validates :status, inclusion: { in: %w[draft published] }
   validates :custom_slug, format: { with: /\A[a-z0-9\-]*\z/, message: "只能包含小写字母、数字和连字符" }, allow_blank: true
@@ -24,6 +24,7 @@ class Post < ApplicationRecord
 
   scope :status_published, -> { where(status: 'published') }
   scope :status_drafts, -> { where(status: 'draft') }
+  scope :only_posts, -> { where(type: nil) }
 
   def published?
     status == 'published'
@@ -31,6 +32,10 @@ class Post < ApplicationRecord
 
   def draft?
     status == 'draft'
+  end
+
+  def thought?
+    is_a?(Thought)
   end
 
   def slug_candidates

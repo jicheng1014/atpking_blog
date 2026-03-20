@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(bundle exec:*)",
-      "Bash(bundle install:*)"
+      "Bash(bundle install:*)",
+      "Bash(bin/rails db:schema:dump)",
+      "Bash(bin/rails generate:*)",
+      "Bash(bin/rails db:migrate)",
+      "Bash(bin/rails routes:*)",
+      "Bash(bin/rails test:*)",
+      "Bash(bin/rails runner:*)",
+      "Skill(agent-browser)"
     ]
   }
 }

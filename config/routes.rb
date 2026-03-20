@@ -12,6 +12,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # 灵感（碎碎念）
+  resources :thoughts, only: [:index, :show]
+
   # 管理界面路由，需要登录
   namespace :admin do
     get "settings/edit", to: 'settings#edit', as: :settings
@@ -22,6 +25,7 @@ Rails.application.routes.draw do
         post :upload_image
       end
     end
+    resources :thoughts, only: [:index, :create, :edit, :update, :destroy]
 
     # 挂载任务队列管理界面
     mount MissionControl::Jobs::Engine => "/jobs", as: 'mission_control_jobs'

@@ -1,0 +1,58 @@
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
+
+  <div class="mb-10">
+    <h1 class="text-xl font-semibold text-stone-900 mb-1">灵感</h1>
+    <p class="text-sm text-stone-400">转瞬即逝的想法</p>
+  </div>
+
+  <% if @thoughts.empty? %>
+    <div class="text-sm text-stone-400 text-center py-16">暂无灵感</div>
+  <% else %>
+    <div class="space-y-0">
+      <% @thoughts.each do |thought| %>
+        <div class="relative pl-6 pb-8 border-l-2 border-stone-100 last:pb-0">
+          <%# 时间线圆点 %>
+          <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-stone-300"></div>
+
+          <div class="mb-1">
+            <time class="text-xs text-stone-400 tabular-nums">
+              <%= link_to thought.created_at.strftime("%Y年%-m月%-d日 %H:%M"),
+                    thought_path(thought),
+                    class: "hover:text-amber-600 transition-colors" %>
+            </time>
+            <% if thought.tags.any? %>
+              <span class="text-xs text-stone-300 ml-2"><%= thought.tags.map(&:name).join(' · ') %></span>
+            <% end %>
+          </div>
+
+          <div class="prose prose-stone prose-sm max-w-none text-sm text-stone-700 leading-relaxed
+                      prose-a:text-amber-700 prose-a:no-underline hover:prose-a:underline
+                      prose-code:text-stone-700 prose-code:bg-stone-100 prose-code:px-1 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+                      prose-img:max-w-[280px] prose-img:rounded-md">
+            <%= raw thought.rendered_content %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <%# 分页 %>
+    <% if @pagy.pages > 1 %>
+      <div class="flex items-center justify-center gap-4 mt-10 pt-6 border-t border-stone-100">
+        <% if @pagy.prev %>
+          <%= link_to thoughts_path(page: @pagy.prev),
+                class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
+            ← 上一页
+          <% end %>
+        <% end %>
+        <span class="text-xs text-stone-300"><%= @pagy.page %> / <%= @pagy.pages %></span>
+        <% if @pagy.next %>
+          <%= link_to thoughts_path(page: @pagy.next),
+                class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
+            下一页 →
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+</div>

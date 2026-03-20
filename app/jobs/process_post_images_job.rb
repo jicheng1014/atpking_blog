@@ -1,11 +1,15 @@
 class ProcessPostImagesJob < ApplicationJob
   queue_as :default
 
-  def perform(post_id = nil)
+  # max_dimension: 图片最大边长（Post 默认 1024，Thought 用 800）
+  def perform(post_id = nil, max_dimension = nil)
     if post_id
-      process_post_images(Post.find(post_id))
+      post = Post.find(post_id)
+      @max_dimension = max_dimension || default_max_dimension(post)
+      process_post_images(post)
     else
       Post.find_each do |post|
+        @max_dimension = default_max_dimension(post)
         process_post_images(post)
       end
     end
@@ -84,7 +88,7 @@ class ProcessPostImagesJob < ApplicationJob
 
   def needs_resizing?(blob)
     metadata = analyze_image(blob)
-    metadata[:width] > 1024 || metadata[:height] > 1024
+    metadata[:width] > @max_dimension || metadata[:height] > @max_dimension
   end
 
   def analyze_image(blob)
@@ -97,7 +101,7 @@ class ProcessPostImagesJob < ApplicationJob
     processed_path = Pathname.new(original_path.to_s.sub('original_', 'processed_'))
 
     processor = ActiveStorage::Transformers::ImageProcessingTransformer.new(
-      :resize_to_limit => [1024, 1024]
+      :resize_to_limit => [@max_dimension, @max_dimension]
     )
 
     # 处理图片
@@ -141,5 +145,9 @@ class ProcessPostImagesJob < ApplicationJob
 
   def update_metadata(blob, new_metadata)
     blob.update_column(:metadata, blob.metadata.merge(new_metadata))
+  end
+
+  def default_max_dimension(post)
+    post.is_a?(Thought) ? Thought::IMAGE_MAX_DIMENSION : 1024
   end
 end

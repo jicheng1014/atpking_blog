@@ -14,6 +14,7 @@
       <!-- 桌面端导航 -->
       <div class="hidden sm:flex items-center gap-6">
         <%= link_to '文章', root_path, class: nav_link_class(controller_name == 'posts' || (controller_name == 'tags' && action_name == 'show')) %>
+        <%= link_to '灵感', thoughts_path, class: nav_link_class(controller_name == 'thoughts') %>
         <%= link_to '标签', tags_path, class: nav_link_class(controller_name == 'tags' && action_name == 'index') %>
         <% if current_user %>
           <%= link_to '管理', admin_root_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors border border-stone-200 px-2.5 py-1 rounded-full" %>
@@ -40,6 +41,7 @@
   <div class="hidden sm:hidden border-t border-stone-200" data-mobile-menu-target="panel">
     <div class="max-w-2xl mx-auto px-4 py-3 space-y-0.5">
       <%= link_to '文章', root_path, class: mobile_nav_link_class(controller_name == 'posts') %>
+      <%= link_to '灵感', thoughts_path, class: mobile_nav_link_class(controller_name == 'thoughts') %>
       <%= link_to '标签', tags_path, class: mobile_nav_link_class(controller_name == 'tags') %>
       <% if current_user %>
         <%= link_to '管理文章', admin_root_path, class: mobile_nav_link_class(false) %>

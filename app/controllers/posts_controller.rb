@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   allow_unauthenticated_access # 允许未登录访问所有动作
 
   def index
-    @posts = Post.status_published.includes(:user, :tags)
+    @posts = Post.only_posts.status_published.includes(:user, :tags)
 
     if params[:tag].present?
       @tag = Tag.find_by!(slug: params[:tag])
@@ -10,19 +10,20 @@ class PostsController < ApplicationController
     end
 
     @pagy, @posts = pagy(@posts.order(created_at: :desc), limit: 20)
-    @all_tags = Tag.left_joins(:posts).where(posts: { status: 'published' })
+    @all_tags = Tag.left_joins(:posts).where(posts: { status: 'published', type: nil })
                    .group(:id).select('tags.*, COUNT(posts.id) as posts_count')
                    .having('COUNT(posts.id) > 0').order('posts_count DESC')
+    @recent_thoughts = Thought.status_published.order(created_at: :desc).limit(5)
   end
 
   def show
-    @post = Post.status_published.friendly.find(params[:id])
+    @post = Post.only_posts.status_published.friendly.find(params[:id])
     @comment = Comment.new
     @comments = @post.comments.includes(:user).order(created_at: :desc)
   end
 
   def feed
-    @posts = Post.status_published.order(created_at: :desc).limit(20)
+    @posts = Post.only_posts.status_published.order(created_at: :desc).limit(20)
     respond_to do |format|
       format.rss { render layout: false }
     end
