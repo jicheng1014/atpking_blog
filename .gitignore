@@ -42,3 +42,4 @@
 
 # Ignore tags file in root directory
 /TAGS
+.claude/settings.local.json
