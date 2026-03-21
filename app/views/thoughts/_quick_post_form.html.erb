@@ -15,7 +15,7 @@
     <%= f.text_area :content,
           rows: 3,
           placeholder: "写点什么... (⌘+Enter 发布)",
-          class: "w-full px-4 py-3 border-0 focus:ring-0 text-sm text-stone-700 leading-relaxed resize-none placeholder-stone-300 bg-white",
+          class: "w-full px-4 py-3 border-0 focus:ring-0 text-base sm:text-sm text-stone-700 leading-relaxed resize-none placeholder-stone-300 bg-white",
           data: {
             paste_image_target: "editor",
             quick_post_target: "editor",
@@ -36,7 +36,7 @@
           <span class="text-xs text-stone-300">|</span>
           <%= f.text_field :tag_list,
                 placeholder: "标签（可选）",
-                class: "text-xs bg-transparent border-0 focus:ring-0 text-stone-400 placeholder-stone-300 w-32 px-1 py-0" %>
+                class: "text-base sm:text-xs bg-transparent border-0 focus:ring-0 text-stone-400 placeholder-stone-300 w-32 px-1 py-0" %>
         </div>
       </div>
       <%= f.submit "发布",
