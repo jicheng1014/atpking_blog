@@ -1,6 +1,6 @@
 <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
 
-  <div class="mb-10">
+  <div class="mb-8">
     <h1 class="text-xl font-semibold text-stone-900 mb-1">灵感</h1>
     <p class="text-sm text-stone-400">转瞬即逝的想法</p>
   </div>
@@ -9,13 +9,86 @@
     <%= render 'thoughts/quick_post_form', thought: @thought, redirect_to_path: thoughts_path %>
   <% end %>
 
+  <%# 月份导航 + 横向日期条 %>
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-3">
+      <%= link_to thoughts_path(month: (@current_month - 1.month).strftime('%Y-%m')),
+            class: "w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors" do %>
+        ‹
+      <% end %>
+      <span class="text-sm font-medium text-stone-600 select-none tabular-nums">
+        <%= @current_month.strftime('%Y年%-m月') %>
+        <% month_total = @heatmap_data.values.sum %>
+        <% if month_total > 0 %>
+          <span class="text-stone-300 font-normal ml-1"><%= month_total %> 条</span>
+        <% end %>
+      </span>
+      <% if @current_month < Date.current.beginning_of_month %>
+        <%= link_to thoughts_path(month: (@current_month + 1.month).strftime('%Y-%m')),
+              class: "w-8 h-8 flex items-center justify-center rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors" do %>
+          ›
+        <% end %>
+      <% else %>
+        <span class="w-8 h-8 flex items-center justify-center text-stone-200 select-none">›</span>
+      <% end %>
+    </div>
+
+    <%# 横向滚动日期条，贴边滚动 %>
+    <div class="overflow-x-auto -mx-4 px-4 sm:-mx-6 sm:px-6 scrollbar-none">
+      <div class="flex gap-1 min-w-max pb-1">
+        <% (1..@current_month.end_of_month.day).each do |day| %>
+          <% date        = @current_month.change(day: day) %>
+          <% count       = @heatmap_data[date.to_s] || 0 %>
+          <% is_today    = date == Date.current %>
+          <% is_future   = date > Date.current %>
+          <% is_selected = @selected_date == date %>
+
+          <% if is_selected %>
+            <%= link_to thoughts_path(month: @current_month.strftime('%Y-%m'), date: date.strftime('%Y-%m-%d')),
+                  id: "chip-#{date}",
+                  class: "flex-shrink-0 flex flex-col items-center gap-1.5 w-10 pt-2 pb-1.5 rounded-xl bg-amber-500 text-white" do %>
+              <span class="text-xs font-semibold tabular-nums leading-none"><%= day %></span>
+              <span class="w-1 h-1 rounded-full bg-white/60"></span>
+            <% end %>
+          <% elsif !is_future && count > 0 %>
+            <%= link_to thoughts_path(month: @current_month.strftime('%Y-%m'), date: date.strftime('%Y-%m-%d')),
+                  id: "chip-#{date}",
+                  class: "flex-shrink-0 flex flex-col items-center gap-1.5 w-10 pt-2 pb-1.5 rounded-xl hover:bg-stone-100 transition-colors #{"bg-stone-50" if is_today}",
+                  title: "#{count} 条" do %>
+              <span class="text-xs font-medium tabular-nums leading-none text-stone-700"><%= day %></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            <% end %>
+          <% else %>
+            <div id="chip-<%= date %>"
+                 class="flex-shrink-0 flex flex-col items-center gap-1.5 w-10 pt-2 pb-1.5 rounded-xl <%= is_today ? "ring-1 ring-stone-200" : "" %>">
+              <span class="text-xs tabular-nums leading-none <%= is_future ? "text-stone-200" : is_today ? "text-stone-500 font-medium" : "text-stone-300" %>"><%= day %></span>
+              <span class="w-1.5 h-1.5"></span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @selected_date %>
+      <div class="flex items-center justify-between mt-3">
+        <span class="text-xs text-stone-400 tabular-nums">
+          <%= @selected_date.strftime('%Y年%-m月%-d日') %>
+          <span class="text-stone-300 ml-1"><%= @heatmap_data[@selected_date.to_s] || 0 %> 条</span>
+        </span>
+        <%= link_to "清除", thoughts_path(month: @current_month.strftime('%Y-%m')),
+              class: "text-xs text-stone-300 hover:text-stone-600 transition-colors" %>
+      </div>
+    <% end %>
+  </div>
+
   <% if @thoughts.empty? %>
-    <div class="text-sm text-stone-400 text-center py-16">暂无灵感</div>
+    <div class="text-sm text-stone-400 text-center py-16">
+      <%= @selected_date ? "这一天还没有灵感" : "暂无灵感" %>
+    </div>
   <% else %>
     <div class="space-y-0">
       <% @thoughts.each do |thought| %>
         <div class="relative pl-6 pb-8 border-l-2 border-stone-100 last:pb-0">
-          <%# 时间线圆点 %>
           <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-stone-300"></div>
 
           <div class="mb-1">
@@ -39,18 +112,17 @@
       <% end %>
     </div>
 
-    <%# 分页 %>
     <% if @pagy.pages > 1 %>
       <div class="flex items-center justify-center gap-4 mt-10 pt-6 border-t border-stone-100">
         <% if @pagy.prev %>
-          <%= link_to thoughts_path(page: @pagy.prev),
+          <%= link_to thoughts_path(page: @pagy.prev, month: @current_month.strftime('%Y-%m'), date: @selected_date&.strftime('%Y-%m-%d')),
                 class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
             ← 上一页
           <% end %>
         <% end %>
         <span class="text-xs text-stone-300"><%= @pagy.page %> / <%= @pagy.pages %></span>
         <% if @pagy.next %>
-          <%= link_to thoughts_path(page: @pagy.next),
+          <%= link_to thoughts_path(page: @pagy.next, month: @current_month.strftime('%Y-%m'), date: @selected_date&.strftime('%Y-%m-%d')),
                 class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
             下一页 →
           <% end %>
@@ -60,3 +132,11 @@
   <% end %>
 
 </div>
+
+<script>
+  // 自动滚动到今天或已选日期
+  (function() {
+    const target = document.getElementById("chip-<%= @selected_date || Date.current %>");
+    if (target) target.scrollIntoView({ inline: "center", block: "nearest", behavior: "instant" });
+  })();
+</script>
