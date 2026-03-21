@@ -9,7 +9,20 @@
       "Bash(bin/rails routes:*)",
       "Bash(bin/rails test:*)",
       "Bash(bin/rails runner:*)",
-      "Skill(agent-browser)"
+      "Skill(agent-browser)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(kamal deploy:*)",
+      "Bash(kamal app:*)",
+      "Bash(agent-browser open:*)",
+      "Bash(agent-browser wait:*)",
+      "Bash(agent-browser snapshot:*)",
+      "Bash(git add:*)",
+      "Read(//private/tmp/**)",
+      "Bash(node -e \":*)",
+      "Bash(node:*)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"bg-amber\\\\|intensity\\\\|heatmap\\\\|color.*class\" /Users/jicheng/Code/Ruby/atpking_blog/app/views --include=*.erb)"
     ]
   }
 }
