@@ -3,48 +3,7 @@
   <h1 class="text-base font-semibold text-stone-800 mb-8">灵感</h1>
 
   <%# 快速发布区 %>
-  <%= form_with(model: [:admin, @thought], class: "mb-10", data: { controller: "paste-image quick-post" }) do |f| %>
-    <% if @thought.errors.any? %>
-      <div class="px-4 py-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-100 mb-4">
-        <% @thought.errors.full_messages.each do |message| %>
-          <span><%= message %></span>
-        <% end %>
-      </div>
-    <% end %>
-
-    <div class="border border-stone-200 rounded-lg overflow-hidden bg-white">
-      <%= f.text_area :content,
-            rows: 3,
-            placeholder: "写点什么... (⌘+Enter 发布)",
-            class: "w-full px-4 py-3 border-0 focus:ring-0 text-sm text-stone-700 leading-relaxed resize-none placeholder-stone-300 bg-white",
-            data: {
-              paste_image_target: "editor",
-              quick_post_target: "editor",
-              action: "paste->paste-image#handlePaste dragover->paste-image#handleDragOver drop->paste-image#handleDrop keydown->quick-post#submitOnKey"
-            } %>
-      <div class="flex items-center justify-between px-3 py-2 border-t border-stone-100 bg-stone-50">
-        <div class="flex items-center gap-3">
-          <label class="inline-flex items-center gap-1.5 text-xs text-stone-400 hover:text-stone-600 cursor-pointer transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            图片
-            <input type="file" class="hidden" accept="image/*"
-                   data-paste-image-target="fileInput"
-                   data-action="change->paste-image#handleFileSelect">
-          </label>
-          <div class="flex items-center gap-1.5">
-            <span class="text-xs text-stone-300">|</span>
-            <%= f.text_field :tag_list,
-                  placeholder: "标签（可选）",
-                  class: "text-xs bg-transparent border-0 focus:ring-0 text-stone-400 placeholder-stone-300 w-32 px-1 py-0" %>
-          </div>
-        </div>
-        <%= f.submit "发布",
-              class: "text-xs px-4 py-1.5 bg-stone-800 text-white rounded-full hover:bg-stone-700 cursor-pointer transition-colors" %>
-      </div>
-    </div>
-  <% end %>
+  <%= render 'thoughts/quick_post_form', thought: @thought %>
 
   <%# 灵感列表 %>
   <% if @thoughts.empty? %>

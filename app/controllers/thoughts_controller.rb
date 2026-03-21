@@ -2,6 +2,7 @@ class ThoughtsController < ApplicationController
   allow_unauthenticated_access
 
   def index
+    @thought = Thought.new if current_user
     @thoughts = Thought.status_published.includes(:tags).order(created_at: :desc)
     @pagy, @thoughts = pagy(@thoughts, limit: 20)
   end

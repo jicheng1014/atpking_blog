@@ -5,6 +5,10 @@
     <p class="text-sm text-stone-400">转瞬即逝的想法</p>
   </div>
 
+  <% if current_user %>
+    <%= render 'thoughts/quick_post_form', thought: @thought, redirect_to_path: thoughts_path %>
+  <% end %>
+
   <% if @thoughts.empty? %>
     <div class="text-sm text-stone-400 text-center py-16">暂无灵感</div>
   <% else %>
