@@ -1,4 +1,6 @@
 class Tag < ApplicationRecord
+  after_commit { PublishStaticSiteJob.enqueue_if_configured }
+
   extend FriendlyId
   friendly_id :name, use: :slugged
 

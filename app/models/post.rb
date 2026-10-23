@@ -15,7 +15,7 @@ class Post < ApplicationRecord
   validates :custom_slug, format: { with: /\A[a-z0-9\-]*\z/, message: "只能包含小写字母、数字和连字符" }, allow_blank: true
 
   after_save :attach_content_images
-  after_save :schedule_image_processing
+  after_commit { PublishStaticSiteJob.enqueue_if_configured }
   before_update :clean_unused_images
 
   def self.permitted_attributes
@@ -99,15 +99,6 @@ class Post < ApplicationRecord
       unless current_urls.any? { |url| url.include?(image.signed_id) }
         image.purge_later
       end
-    end
-  end
-
-  def schedule_image_processing
-    return unless content_changed? || saved_change_to_status?
-
-    # 如果文章是发布状态，立即处理图片
-    if published?
-      ProcessPostImagesJob.perform_later(id)
     end
   end
 end

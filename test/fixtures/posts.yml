@@ -1,0 +1,13 @@
+one:
+  title: Published article
+  slug: published-article
+  content: "## Ruby and Rails"
+  status: published
+  user: one
+
+two:
+  title: Private draft
+  slug: private-draft
+  content: Unpublished content
+  status: draft
+  user: one

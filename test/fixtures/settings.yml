@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  key: MyString
+  key: site_name
   value: MyText
 
 two:
-  key: MyString
+  key: icp_number
   value: MyText

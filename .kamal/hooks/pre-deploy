@@ -1,0 +1,2 @@
+#!/usr/bin/env ruby
+abort "Rails now runs on the N305 VM; use the deployment procedure in README.md. Guangzhou serves static releases only."

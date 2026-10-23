@@ -16,6 +16,7 @@ class ThoughtsController < ApplicationController
     published = Thought.status_published
 
     # Group by date in Ruby (not SQL DATE()) to respect Rails timezone (UTC+8 for Chinese audience)
+    @first_month = [ published.minimum(:created_at)&.to_date&.beginning_of_month || today, today ].min
     @heatmap_data = published
       .where(created_at: @current_month.beginning_of_day..@current_month.end_of_month.end_of_day)
       .pluck(:created_at)

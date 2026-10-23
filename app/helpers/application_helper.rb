@@ -10,15 +10,8 @@ module ApplicationHelper
     { images: images, text: text }
   end
 
-  # 将 Active Storage blob URL 转为缩略图 variant URL（首次访问时按需生成并缓存）
-  # fill: 填充尺寸（像素），默认 160 以覆盖 2× retina 下的 80px 展示
+  # Keep original URLs and bytes; CSS crops the small preview without a dynamic variant endpoint.
   def thought_thumbnail_url(src, fill: 160)
-    if src =~ /\/rails\/active_storage\/blobs\/(?:proxy\/)?([^\/]+)\//
-      blob = ActiveStorage::Blob.find_signed($1)
-      return url_for(blob.variant(resize_to_fill: [fill, fill])) if blob&.image?
-    end
-    src
-  rescue ActiveRecord::RecordNotFound, ActiveSupport::MessageVerifier::InvalidSignature
     src
   end
 

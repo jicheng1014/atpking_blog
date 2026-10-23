@@ -1,4 +1,6 @@
 class Setting < ApplicationRecord
+  after_commit { PublishStaticSiteJob.enqueue_if_configured }
+
   validates :key, presence: true, uniqueness: true
 
   class << self

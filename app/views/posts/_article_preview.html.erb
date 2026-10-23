@@ -10,7 +10,7 @@
     <%# 正文区 %>
     <div class="flex-1 min-w-0">
       <h2 class="text-sm font-medium text-stone-800 leading-snug mb-1.5">
-        <%= link_to post.title, post_path(post),
+        <%= link_to post.title, post.thought? ? thought_path(post) : post_path(post),
               class: "hover:text-amber-700 transition-colors duration-150" %>
       </h2>
 

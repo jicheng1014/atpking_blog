@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# Called by PublishStaticSiteJob after a complete local export.
+require "json"
+require "digest"
+require "fileutils"
+require "pathname"
+require "tmpdir"
+require "open3"
+
+release = Pathname.new(ARGV.fetch(0)).realpath
+id = release.basename.to_s
+abort "Invalid release name" unless id.match?(/\A[a-zA-Z0-9_-]+\z/)
+target = ENV.fetch("STATIC_PUBLISH_TARGET")
+abort "Invalid SSH destination" unless target.match?(/\A[a-zA-Z0-9_.-]+@[a-zA-Z0-9_.-]+\z/)
+remote = "/srv/atpking-blog"
+def run!(*args)
+  out, status = Open3.capture2e(*args)
+  raise "#{args.first} failed: #{out}" unless status.success?
+end
+ssh = "ssh -o BatchMode=yes -o ConnectTimeout=20 -i #{ENV.fetch('STATIC_PUBLISH_KEY', '/rails/deploy/id_ed25519')} -o UserKnownHostsFile=#{ENV.fetch('STATIC_PUBLISH_KNOWN_HOSTS', '/rails/deploy/known_hosts')}"
+manifest = release.glob("**/*").select(&:file?).to_h do |file|
+  raise "Symlink in release" if file.symlink?
+  [file.relative_path_from(release).to_s, Digest::SHA256.file(file).hexdigest]
+end
+release.join("manifest.json").write(JSON.generate(manifest))
+# SQLite online backup includes committed WAL data without copying a live WAL pair.
+Dir.mktmpdir("blog-backup-") do |dir|
+  storage = Pathname.new(ENV.fetch("BLOG_STORAGE_PATH", "/rails/storage"))
+  db = storage.join("production.sqlite3")
+  run!("sqlite3", db.to_s, ".backup '#{dir}/production.sqlite3'")
+  result, status = Open3.capture2("sqlite3", "#{dir}/production.sqlite3", "PRAGMA integrity_check;")
+  raise "Invalid database backup" unless status.success? && result.strip == "ok"
+  run!("rsync", "-az", "-e", ssh, "--exclude=*.sqlite3*", "--exclude=.keep", "#{storage}/", "#{target}:#{remote}/backups/originals/")
+  run!("rsync", "-az", "-e", ssh, "#{dir}/", "#{target}:#{remote}/backups/#{id}/")
+end
+# Images/assets arrive before HTML. Nothing is public until activation validates every hash.
+run!("rsync", "-az", "-e", ssh, "--exclude=/pages", "--exclude=manifest.json", "#{release}/", "#{target}:#{remote}/releases/#{id}/")
+run!("rsync", "-az", "-e", ssh, "#{release}/", "#{target}:#{remote}/releases/#{id}/")
+require "shellwords"
+run!(*Shellwords.split(ssh), target, "activate", id)
+puts "Published #{id}"
