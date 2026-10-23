@@ -4,6 +4,8 @@ function revealImages() {
   document.querySelectorAll("img[data-lqip]").forEach((image) => {
     if (image.dataset.revealStarted) return
     image.dataset.revealStarted = "true"
+    const bounds = image.getBoundingClientRect()
+    if (bounds.top < window.innerHeight && bounds.bottom > 0) image.loading = "eager"
     const reveal = async () => {
       try { await image.decode() } catch (_) { /* Let broken image alt text remain visible. */ }
       image.classList.add("image-decoded")

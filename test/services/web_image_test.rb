@@ -39,4 +39,19 @@ class WebImageTest < ActiveSupport::TestCase
   ensure
     blob&.purge
   end
+
+  test "converts animated GIF without dropping frames" do
+    frame = Vips::Image.black(24, 24)
+    image = frame.new_from_image([255, 0, 0]).join(frame.new_from_image([0, 255, 0]), :vertical)
+    image.set_type(GObject::GINT_TYPE, "page-height", 24)
+    image.set_type(Vips::ARRAY_INT_TYPE, "delay", [100, 200])
+    blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(image.gifsave_buffer), filename: "animated.gif", content_type: "image/gif")
+    WebImage.normalize!(blob)
+    decoded = Vips::Image.new_from_buffer(blob.download, "", n: -1)
+    assert_equal [24, 48], [decoded.width, decoded.height]
+    assert_equal [100, 200], decoded.get("delay")
+    assert_equal "image/webp", blob.content_type
+  ensure
+    blob&.purge
+  end
 end
