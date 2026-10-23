@@ -6,7 +6,7 @@
 
 ## N305 编辑 + 广州静态站
 
-Ruby 4.0.9 / Rails 8.1.4 后台与 SQLite、规范化 WebP 图片运行在 N305 的 Ubuntu VM。公网 `https://www.3qruok.com` 始终进入广州 ECS；nginx 直接提供发布后的页面、RSS 与图片，仅 `/admin`、`/session`、`/passwords` 和需要登录的未发布图片预览通过 Tailscale 转发。浏览器不需要安装 Tailscale。
+Ruby 4.0.9 / Rails 8.1.4 后台与 SQLite、规范化 WebP 图片运行在 N305 的 Ubuntu VM。公网 `https://www.3qruok.com` 始终进入广州 ECS；nginx 直接提供发布后的页面、RSS 与图片，`/admin`、`/session`、`/passwords` 和需要登录的未发布图片预览通过 Tailscale 转发。首页 `/` 与灵感列表 `/thoughts`（含末尾斜杠）带 `session_id` Cookie 时也转发 Rails，由 Rails 验证签名和会话后显示原有快捷发布框；无 Cookie 的访客仍读取静态页面。动态页面禁止缓存，静态页面按 Cookie 区分缓存；发布后作者立即看到主库内容，访客等待自动静态发布。浏览器不需要安装 Tailscale。
 
 发布流程：模型提交后 `PublishStaticSiteJob` 串行生成完整站点；图片与资源先传，页面后传；保存 SQLite online-backup、图片备份；接收端校验文件 SHA256 与数据库完整性后原子替换 `current` 链接。失败保留旧版本并重试三次。每天 00:05 刷新日期/月历。草稿保存不外发；已发布文章更新、取消发布、删除均自动重发。后台状态显示进行中、成功时间或失败原因，任务页可重试。
 
