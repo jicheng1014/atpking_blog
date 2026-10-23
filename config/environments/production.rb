@@ -26,8 +26,8 @@ Rails.application.configure do
 
   # 配置 Active Storage URL 选项
   config.active_storage.resolve_model_to_route = :rails_storage_proxy
-  config.action_mailer.default_url_options = { host: 'www.3qruok.com' }
-  config.active_storage.default_url_options = { host: 'www.3qruok.com' }
+  config.action_mailer.default_url_options = { host: "www.3qruok.com" }
+  config.active_storage.default_url_options = { host: "www.3qruok.com" }
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
