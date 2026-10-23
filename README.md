@@ -22,4 +22,6 @@ Ruby 4.0.9 / Rails 8.1.4 后台与 SQLite、规范化 WebP 图片运行在 N305 
 
 回滚静态版本：使用发布 SSH key 执行 `ssh blogdeploy@<广州Tailscale地址> rollback <版本>`，会先校验完整性再切换。数据库恢复先 `systemctl --user stop atpking-blog`（不停止整台 VM），从 `backups/<版本>/production.sqlite3` 恢复，删除对应旧 WAL/SHM，再恢复 `backups/originals/` 并验证 `PRAGMA integrity_check` 为 `ok` 后启动。迁移前广州原卷备份单独保留在 `/root/blog-migration-backups/20261023/`。
 
-验证：`bin/rails test test/services/web_image_test.rb test/services/static_site_exporter_test.rb test/integration/blog_test.rb test/integration/static_admin_test.rb test/controllers/admin/settings_controller_test.rb`，以及 `python3 test/deploy_receiver_test.py`。密码重置 token/页面保留，链接使用真实公网域名；原项目尚未配置真实 SMTP 与发信地址，邮件交付需指定发信账号后配置。
+验证：`bin/rails test test/services/web_image_test.rb test/services/static_site_exporter_test.rb test/integration/blog_test.rb test/integration/static_admin_test.rb test/controllers/admin/settings_controller_test.rb`，以及 `python3 test/deploy_receiver_test.py`。密码重置 token/页面保留，链接使用真实公网域名。
+
+密码重置邮件使用与 OK Uptime 相同的阿里云 SMTP 接入方式：在私有 `blog.env` 配置完整发信邮箱 `SMTP_USER_NAME`、`SMTP_PASSWORD`，可选 `SMTP_ADDRESS`（默认 `smtp.mail.aliyun.com`）与 `MAIL_FROM`（默认使用发信邮箱）。连接使用 465 端口和 TLS，并校验服务器证书。环境文件权限为 0600，禁止提交；修改后重启博客用户服务。SMTP 认证通过仅证明连接和凭据有效，实际邮件送达需单独验收。
