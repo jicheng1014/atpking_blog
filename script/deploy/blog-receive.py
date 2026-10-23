@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Forced SSH command for the blog publisher; no shell, forwarding, or arbitrary paths."""
-import hashlib, json, os, pathlib, re, shlex, sqlite3, sys
+import base64, hashlib, json, os, pathlib, re, shlex, sqlite3, sys
 ROOT = pathlib.Path('/srv/atpking-blog')
 args = shlex.split(os.environ.get('SSH_ORIGINAL_COMMAND', ''))
 if args[:2] == ['rsync', '--server']:
@@ -27,6 +27,12 @@ elif len(args) == 2 and args[0] in ('activate', 'rollback') and re.fullmatch(r'[
         with sqlite3.connect('file:' + str(backup) + '?mode=ro', uri=True) as db:
             if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok':
                 sys.exit('Invalid database snapshot')
+            for key, checksum in db.execute('SELECT key, checksum FROM active_storage_blobs'):
+                if not re.fullmatch(r'[a-zA-Z0-9_-]+', key):
+                    sys.exit('Invalid storage key')
+                image = ROOT / 'backups/originals' / key[:2] / key[2:4] / key
+                if not image.is_file() or base64.b64encode(hashlib.md5(image.read_bytes()).digest()).decode() != checksum:
+                    sys.exit('Image backup missing or corrupt: ' + key)
     current = ROOT / 'current'
     if current.is_symlink():
         old = os.readlink(current)

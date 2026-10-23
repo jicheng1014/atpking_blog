@@ -54,16 +54,13 @@ class Admin::PostsController < Admin::ApplicationController
         return render json: { error: '图片大小不能超过 10MB' }, status: :unprocessable_entity
       end
 
-      # 使用 Active Storage 处理上传
+      converted = WebImage.convert(image.tempfile.path, content_type: image.content_type)
+      bytes, metadata = converted if converted
       blob = ActiveStorage::Blob.create_and_upload!(
-        io: image,
-        filename: image.original_filename,
-        content_type: image.content_type,
-        metadata: {
-          identified: true,
-          analyzed: true,
-          processed: false  # 标记为未处理
-        }
+        io: converted ? StringIO.new(bytes) : image,
+        filename: converted ? "#{File.basename(image.original_filename, '.*')}.webp" : image.original_filename,
+        content_type: converted ? "image/webp" : image.content_type,
+        metadata: metadata || {}
       )
 
       # 返回原始图片的 URL

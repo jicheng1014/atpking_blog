@@ -2,6 +2,7 @@ require "test_helper"
 require "tmpdir"
 
 class StaticSiteExporterTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
   setup do
     @directory = Dir.mktmpdir("static-export-")
     @release = Pathname(@directory).join("release")
@@ -41,8 +42,8 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
     assert_includes page("/posts/tag/ruby", page: 2).read, '/posts/tag/ruby"'
   end
 
-  test "copies only referenced images byte for byte at proxy redirect and legacy paths" do
-    bytes = "original image bytes\x00\xff".b
+  test "exports normalized WebP at proxy redirect and legacy paths" do
+    bytes = Vips::Image.black(32, 32).new_from_image([50, 120, 200]).pngsave_buffer
     blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(bytes), filename: "image space.png", content_type: "image/png")
     draft_blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("draft private image"), filename: "private.png", content_type: "image/png")
     urls = ["proxy/", "redirect/", ""].map { |prefix| "/rails/active_storage/blobs/#{prefix}#{blob.signed_id}/image%20space.png" }
@@ -51,10 +52,10 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
     posts(:two).update_columns(content: "![private](#{private_url})")
     StaticSiteExporter.new(@release).call
 
-    urls.each { |url| assert_equal bytes, @release.join(URI.decode_www_form_component(url).delete_prefix("/")).binread }
+    urls.each { |url| assert_equal "WEBP", @release.join("#{URI.decode_www_form_component(url).delete_prefix("/")}.webp").binread[8, 4] }
     refute @release.join(private_url.delete_prefix("/")).exist?
     ProcessPostImagesJob.perform_now(posts(:one).id)
-    assert_equal bytes, blob.download
+    assert_equal "WEBP", blob.reload.download[8, 4]
   ensure
     blob&.purge
     draft_blob&.purge
@@ -89,6 +90,26 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
     job = PublishStaticSiteJob.new
     job.define_singleton_method(:system) { |*| flunk "Transport must not run after export failure" }
     assert_match(/Missing upload/, assert_raises(RuntimeError) { job.perform }.message)
+    assert_equal "failed", PublishStaticSiteJob.publication_status["state"]
+  ensure
+    ENV["STATIC_PUBLISH_TARGET"] = previous_target
+  end
+
+  test "draft saves stay private and published changes enqueue automatically" do
+    previous_target = ENV["STATIC_PUBLISH_TARGET"]
+    ENV["STATIC_PUBLISH_TARGET"] = "unused-test-target"
+    assert_no_enqueued_jobs only: PublishStaticSiteJob do
+      posts(:two).update!(content: "Private draft update", tag_list: "Private draft tag")
+    end
+    assert_enqueued_jobs 1, only: PublishStaticSiteJob do
+      posts(:two).update!(status: "published")
+    end
+    assert_enqueued_jobs 1, only: PublishStaticSiteJob do
+      posts(:two).update!(status: "draft")
+    end
+    assert_enqueued_jobs 1, only: PublishStaticSiteJob do
+      posts(:one).destroy!
+    end
   ensure
     ENV["STATIC_PUBLISH_TARGET"] = previous_target
   end

@@ -17,7 +17,7 @@ def run!(*args)
   out, status = Open3.capture2e(*args)
   raise "#{args.first} failed: #{out}" unless status.success?
 end
-ssh = "ssh -o BatchMode=yes -o ConnectTimeout=20 -i #{ENV.fetch('STATIC_PUBLISH_KEY', '/rails/deploy/id_ed25519')} -o UserKnownHostsFile=#{ENV.fetch('STATIC_PUBLISH_KNOWN_HOSTS', '/rails/deploy/known_hosts')}"
+ssh = "ssh -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=3 -i #{ENV.fetch('STATIC_PUBLISH_KEY', '/rails/deploy/id_ed25519')} -o UserKnownHostsFile=#{ENV.fetch('STATIC_PUBLISH_KNOWN_HOSTS', '/rails/deploy/known_hosts')}"
 manifest = release.glob("**/*").select(&:file?).to_h do |file|
   raise "Symlink in release" if file.symlink?
   [file.relative_path_from(release).to_s, Digest::SHA256.file(file).hexdigest]
@@ -30,12 +30,12 @@ Dir.mktmpdir("blog-backup-") do |dir|
   run!("sqlite3", db.to_s, ".backup '#{dir}/production.sqlite3'")
   result, status = Open3.capture2("sqlite3", "#{dir}/production.sqlite3", "PRAGMA integrity_check;")
   raise "Invalid database backup" unless status.success? && result.strip == "ok"
-  run!("rsync", "-az", "-e", ssh, "--exclude=*.sqlite3*", "--exclude=.keep", "#{storage}/", "#{target}:#{remote}/backups/originals/")
-  run!("rsync", "-az", "-e", ssh, "#{dir}/", "#{target}:#{remote}/backups/#{id}/")
+  run!("rsync", "--timeout=90", "-az", "-e", ssh, "--exclude=*.sqlite3*", "--exclude=.keep", "#{storage}/", "#{target}:#{remote}/backups/originals/")
+  run!("rsync", "--timeout=90", "-az", "-e", ssh, "#{dir}/", "#{target}:#{remote}/backups/#{id}/")
 end
 # Images/assets arrive before HTML. Nothing is public until activation validates every hash.
-run!("rsync", "-az", "-e", ssh, "--exclude=/pages", "--exclude=manifest.json", "#{release}/", "#{target}:#{remote}/releases/#{id}/")
-run!("rsync", "-az", "-e", ssh, "#{release}/", "#{target}:#{remote}/releases/#{id}/")
+run!("rsync", "--timeout=90", "-azc", "--no-times", "--link-dest=/srv/atpking-blog/current", "--chmod=D755,F644", "-e", ssh, "--exclude=/pages", "--exclude=manifest.json", "#{release}/", "#{target}:#{remote}/releases/#{id}/")
+run!("rsync", "--timeout=90", "-azc", "--no-times", "--link-dest=/srv/atpking-blog/current", "--chmod=D755,F644", "-e", ssh, "#{release}/", "#{target}:#{remote}/releases/#{id}/")
 require "shellwords"
 run!(*Shellwords.split(ssh), target, "activate", id)
 puts "Published #{id}"

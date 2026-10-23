@@ -1,0 +1,3 @@
+#!/bin/sh
+runtime=/home/atpking/atpking-blog/runtime
+exec "$runtime/system-libs/ld-linux-x86-64.so.2" --library-path "$runtime/system-libs" "$runtime/sqlite3" "$@"

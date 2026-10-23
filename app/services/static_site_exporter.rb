@@ -68,13 +68,36 @@ class StaticSiteExporter
   def export(url)
     html = render(url)
     document = Nokogiri::HTML(html)
+    image_index = 0
+    document.css("img").each do |node|
+      match = node["src"].to_s.match(%r{/rails/active_storage/blobs/(?:proxy/|redirect/)?([^/]+)/})
+      next unless match
+      blob = ActiveStorage::Blob.find_signed!(match[1])
+      WebImage.normalize!(blob)
+      if blob.metadata["lqip"]
+        node["data-lqip"] = blob.metadata["lqip"]
+        node["width"] = blob.metadata["width"].to_s
+        node["height"] = blob.metadata["height"].to_s
+        node["loading"] = image_index.zero? ? "eager" : "lazy"
+        image_index += 1
+        node["decoding"] = "async"
+        wrapper = Nokogiri::XML::Node.new("span", document)
+        wrapper["class"] = "progressive-image"
+        card = node["class"].to_s.split.include?("h-full")
+        wrapper["class"] += " progressive-image-card" if card
+        wrapper["style"] = "background-image:url(#{blob.metadata['lqip']});"
+        wrapper["style"] += "aspect-ratio:#{blob.metadata['width']}/#{blob.metadata['height']};" unless card
+        node.replace(wrapper)
+        wrapper.add_child(node)
+      end
+    end
     document.css("[src], [href], [poster]").each do |node|
       %w[src href poster].each { |attribute| @resources << node[attribute] if node[attribute] }
     end
     document.css("[srcset]").each do |node|
       node["srcset"].split(",").each { |source| @resources << source.strip.split.first }
     end
-    write(url, html)
+    write(url, document.to_html)
   end
 
   def render(url)
@@ -134,6 +157,8 @@ class StaticSiteExporter
       match = path.match(%r{\A/rails/active_storage/blobs/(?:proxy/|redirect/)?([^/]+)/[^/]+\z})
       raise "Unsupported Active Storage URL: #{path}" unless match
       blob = ActiveStorage::Blob.find_signed!(match[1])
+      WebImage.normalize!(blob)
+      target = Pathname("#{target}.webp") if blob.content_type == "image/webp"
       target.open("wb") { |file| blob.download { |chunk| file.write(chunk) } }
     end
   rescue URI::InvalidURIError

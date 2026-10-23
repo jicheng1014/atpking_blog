@@ -67,6 +67,16 @@
       </div>
     <% end %>
 
+    <% if ENV["STATIC_PUBLISH_TARGET"].present? %>
+      <% publication = PublishStaticSiteJob.publication_status %>
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-3 text-xs text-stone-500" role="status">
+        网站发布：<%= { "publishing" => "正在生成并上传，完成前继续显示旧版本", "succeeded" => "已成功发布", "failed" => "发布失败，旧版本保持可用，任务会自动重试" }.fetch(publication["state"], "尚未发布") %>
+        <% if publication["last_success_at"] %> · 上次成功 <%= Time.iso8601(publication["last_success_at"]).in_time_zone.strftime("%m-%d %H:%M") %><% end %>
+        · <%= link_to "查看任务", admin_mission_control_jobs_path, class: "underline" %>
+        <% if publication["error"].present? %><p><%= publication["error"] %></p><% end %>
+      </div>
+    <% end %>
+
     <main>
       <%= yield %>
     </main>

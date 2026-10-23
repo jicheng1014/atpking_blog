@@ -27,6 +27,7 @@ class AtomicReleaseTest(unittest.TestCase):
                 backup.mkdir(parents=True)
                 with sqlite3.connect(backup / 'production.sqlite3') as db:
                     db.execute('CREATE TABLE posts(id INTEGER)')
+                    db.execute('CREATE TABLE active_storage_blobs(key TEXT, checksum TEXT)')
             def run(command):
                 return subprocess.run(['python3', str(receiver)], env={**os.environ, 'SSH_ORIGINAL_COMMAND': command}, capture_output=True)
             self.assertEqual(run('activate old').returncode, 0)

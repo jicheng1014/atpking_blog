@@ -1,5 +1,6 @@
 class Tag < ApplicationRecord
-  after_commit { PublishStaticSiteJob.enqueue_if_configured }
+  before_destroy(prepend: true) { @affected_published_posts = posts.status_published.exists? }
+  after_commit { PublishStaticSiteJob.enqueue_if_configured if @affected_published_posts || posts.status_published.exists? }
 
   extend FriendlyId
   friendly_id :name, use: :slugged

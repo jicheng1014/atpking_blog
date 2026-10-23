@@ -15,7 +15,7 @@ class Post < ApplicationRecord
   validates :custom_slug, format: { with: /\A[a-z0-9\-]*\z/, message: "只能包含小写字母、数字和连字符" }, allow_blank: true
 
   after_save :attach_content_images
-  after_commit { PublishStaticSiteJob.enqueue_if_configured }
+  after_commit { PublishStaticSiteJob.enqueue_if_configured if published? || previous_changes.dig("status", 0) == "published" }
   before_update :clean_unused_images
 
   def self.permitted_attributes
@@ -71,7 +71,7 @@ class Post < ApplicationRecord
     content.scan(/!\[.*?\]\((\/rails\/active_storage\/blobs\/.*?)\)/) do |url|
       begin
         # 从 URL 中提取 signed_id
-        if url[0] =~ /\/rails\/active_storage\/blobs\/(.*?)\//
+        if url[0] =~ /\/rails\/active_storage\/blobs\/(?:proxy\/|redirect\/)?([^\/]+)\//
           signed_id = $1
           # 检查这个 blob 是否存在
           blob = ActiveStorage::Blob.find_signed(signed_id)

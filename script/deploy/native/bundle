@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /home/atpking/atpking-blog/bin/ruby /home/atpking/atpking-blog/runtime/local/bin/bundle "$@"

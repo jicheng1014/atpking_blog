@@ -1,0 +1,23 @@
+[Unit]
+Description=ATPKING blog administration and publishing
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/home/atpking/atpking-blog/app
+EnvironmentFile=/home/atpking/atpking-blog/blog.env
+Environment=PATH=/home/atpking/atpking-blog/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=BUNDLE_WITHOUT=development:test
+Environment=BUNDLE_DEPLOYMENT=1
+Environment=RAILS_LOG_TO_STDOUT=1
+Environment=RAILS_SERVE_STATIC_FILES=1
+ExecStart=/home/atpking/atpking-blog/bin/ruby bin/rails server -b 100.64.0.4 -p 3000
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=60
+UMask=0077
+
+[Install]
+WantedBy=default.target

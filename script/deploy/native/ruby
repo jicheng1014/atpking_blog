@@ -1,0 +1,8 @@
+#!/bin/sh
+runtime=/home/atpking/atpking-blog/runtime
+export RUBYLIB="$runtime/local/lib/ruby/4.0.0:$runtime/local/lib/ruby/4.0.0/x86_64-linux${RUBYLIB:+:$RUBYLIB}"
+export GEM_HOME="$runtime/local/bundle"
+export GEM_PATH="$runtime/local/bundle:$runtime/local/bundle/ruby/4.0.0:$runtime/local/lib/ruby/gems/4.0.0"
+export BUNDLE_PATH="$runtime/local/bundle"
+export BUNDLE_APP_CONFIG="$runtime/local/bundle"
+exec "$runtime/system-libs/ld-linux-x86-64.so.2" --library-path "$runtime/system-libs:$runtime/local/lib" "$runtime/local/bin/ruby" "$@"
