@@ -66,6 +66,7 @@
 .home-thought-content p { margin: .25em 0; }
 .home-thought-content a { color: #0756b9; overflow-wrap: anywhere; }
 .home-thought-content img { display: block; max-width: 100%; max-height: 380px; width: auto; height: auto; margin: 12px 0 0; border-radius: 6px; }
+.home-thought-content .progressive-image { width: fit-content; aspect-ratio: auto !important; }
 .home-thought-content pre { max-width: 100%; overflow-x: auto; }
 .home-empty { padding: 36px 0; color: #8292aa; font-size: 14px; }
 .home-articles .article-preview { padding: 20px 0; border-color: #dbe4f0; }
