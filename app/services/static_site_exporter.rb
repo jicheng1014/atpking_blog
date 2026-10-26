@@ -43,7 +43,7 @@ class StaticSiteExporter
   end
 
   def export_thoughts
-    dates = Thought.status_published.pluck(:created_at).map(&:to_date).tally
+    dates = Thought.status_published.pluck(:published_at).map { |time| time.in_time_zone.to_date }.tally
     paginated("/thoughts", dates.values.sum)
     current = Date.current.beginning_of_month
     month = [ dates.keys.min&.beginning_of_month || current, current ].min

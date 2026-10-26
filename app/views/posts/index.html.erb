@@ -1,203 +1,124 @@
-<div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
-
-  <%# 未过滤时的站点介绍 %>
-  <% unless @tag %>
-    <div class="mb-10">
-      <h1 class="text-xl font-semibold text-stone-900 mb-1">
-        <%= Setting.site_name.presence || '3Q RUOK?' %>
-      </h1>
-      <p class="text-sm text-stone-400">记录点点滴滴</p>
-    </div>
-  <% end %>
-
-  <%# ─── 灵感流 ─── %>
-  <% if @tag.nil? && (@recent_thoughts.present? || current_user) %>
-    <div class="mb-12">
-      <div class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <span class="w-1 h-4 bg-amber-400 rounded-full"></span>
-          <h2 class="text-xs font-semibold text-stone-500 tracking-widest uppercase">灵感</h2>
+<% content_for :title, (@article_index ? '文章 · ATPKING' : 'ATPKING · 随想与文章') %>
+<div class="<%= @article_index ? 'max-w-2xl mx-auto px-4 sm:px-6 py-10' : 'home-page' %>">
+  <% unless @article_index %>
+    <header class="home-intro" id="about">
+      <div class="home-identity">
+        <div class="home-avatar" aria-hidden="true">A</div>
+        <div>
+          <h1>ATPKING</h1>
+          <p>写代码，做产品，也记录日常的想法。</p>
         </div>
-        <%= link_to thoughts_path,
-              class: "text-xs text-stone-400 hover:text-amber-600 transition-colors" do %>
-          查看全部 →
-        <% end %>
       </div>
+      <div class="home-projects" id="projects" aria-label="个人项目">
+        <span>在做：</span>
+        <%= link_to 'OK Uptime ↗', 'https://www.okuptime.com/', target: '_blank', rel: 'noopener noreferrer' %>
+        <%= link_to '毛驴短链 ↗', 'https://www.maolvdl.com/', target: '_blank', rel: 'noopener noreferrer' %>
+        <%= link_to 'Pocket Board ↗', 'https://pocketboard.okuptime.com/zh', target: '_blank', rel: 'noopener noreferrer' %>
+        <%= link_to 'Git Knock ↗', 'https://gitknock.okuptime.com/', target: '_blank', rel: 'noopener noreferrer' %>
+      </div>
+    </header>
 
-      <%# 管理员快速发布 %>
-      <% if current_user %>
-        <%= form_with(url: admin_thoughts_path, scope: :thought, class: "mb-3", data: { controller: "paste-image quick-post" }) do |f| %>
-          <%= hidden_field_tag :redirect_to, root_path %>
-          <div class="rounded-lg border border-stone-200 bg-white overflow-hidden focus-within:border-stone-300 focus-within:shadow-sm transition-all">
-            <%= f.text_area :content,
-                  rows: 2,
-                  placeholder: "此刻的灵感... (⌘+Enter 发布)",
-                  class: "w-full px-4 py-3 border-0 focus:ring-0 text-base sm:text-sm text-stone-700 leading-relaxed resize-none placeholder-stone-300 bg-transparent",
-                  data: {
-                    paste_image_target: "editor",
-                    quick_post_target: "editor",
-                    action: "paste->paste-image#handlePaste dragover->paste-image#handleDragOver drop->paste-image#handleDrop keydown->quick-post#submitOnKey"
-                  } %>
-            <div class="flex items-center justify-between px-3 py-2 border-t border-stone-50 bg-stone-50/50">
-              <label class="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-stone-400 hover:text-stone-600 cursor-pointer transition-colors rounded-md hover:bg-stone-100 -ml-1">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                图片
-                <input type="file" class="hidden" accept="image/*"
-                       data-paste-image-target="fileInput"
-                       data-action="change->paste-image#handleFileSelect">
-              </label>
-              <%= f.submit "发布",
-                    class: "text-xs px-4 py-1.5 bg-stone-800 text-white rounded-full hover:bg-stone-700 cursor-pointer transition-colors" %>
-            </div>
+    <div class="home-columns">
+      <section class="home-thoughts" id="thoughts" aria-labelledby="thoughts-title">
+        <div class="home-section-heading">
+          <h2 id="thoughts-title">随想</h2>
+          <%= link_to '全部随想 →', thoughts_path %>
+        </div>
+
+        <% if current_user %>
+          <%= render 'thoughts/quick_post_form', thought: Thought.new, redirect_to_path: root_path %>
+        <% end %>
+
+        <% if @recent_thoughts.empty? %>
+          <p class="home-empty">暂无随想</p>
+        <% else %>
+          <div class="home-thought-feed">
+            <% @recent_thoughts.each do |thought| %>
+              <article class="home-thought">
+                <div class="home-thought-meta">
+                  <span class="home-mini-avatar" aria-hidden="true">A</span>
+                  <span>ATPKING</span>
+                  <span aria-hidden="true">·</span>
+                  <time datetime="<%= thought.publication_time.iso8601 %>">
+                    <%= link_to thought.publication_time.in_time_zone.strftime('%-m月%-d日 %H:%M'), thought_path(thought) %>
+                  </time>
+                </div>
+                <div class="home-thought-content prose prose-stone max-w-none">
+                  <%= raw thought.rendered_content %>
+                </div>
+              </article>
+            <% end %>
           </div>
         <% end %>
-      <% end %>
 
-      <% if @recent_thoughts.present? %>
-      <div class="grid gap-2.5">
-        <% @recent_thoughts.each do |thought| %>
-          <% parts = extract_thought_parts(thought.rendered_content) %>
-          <%= link_to thought_path(thought),
-                class: "group block px-4 py-3 rounded-lg border border-stone-100 bg-white/60 hover:bg-white hover:border-stone-200 hover:shadow-sm transition-all duration-200" do %>
-
-            <% if parts[:images].size == 1 %>
-              <%# 单图：左图右文 %>
-              <div class="flex gap-3 items-start">
-                <div class="shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-stone-100">
-                  <img src="<%= thought_thumbnail_url(parts[:images].first, fill: 160) %>" alt="" class="w-full h-full object-cover" loading="lazy">
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm text-stone-600 group-hover:text-stone-800 leading-relaxed line-clamp-3 transition-colors">
-                    <%= truncate(parts[:text], length: 100) %>
-                  </p>
-                </div>
+        <div class="home-rhythm" aria-labelledby="rhythm-title">
+          <div class="home-rhythm-heading">
+            <h3 id="rhythm-title">本月发布节奏</h3>
+            <span><%= @rhythm_month.strftime('%Y年%-m月') %> · 随想 / 日</span>
+          </div>
+          <% max_count = [@rhythm_counts.values.max.to_i, 1].max %>
+          <div class="home-rhythm-days" style="--days: <%= @rhythm_month.end_of_month.day %>" role="img" aria-label="<%= @rhythm_month.strftime('%Y年%-m月') %>每天已发布随想数量：<%= @rhythm_counts.sort.map { |day, count| "#{day}日#{count}条" }.join('，').presence || '暂无发布' %>；其余已过去日期为零条">
+            <% (1..@rhythm_month.end_of_month.day).each do |day| %>
+              <% count = @rhythm_counts.fetch(day, 0) %>
+              <% future = @rhythm_month.change(day: day) > Date.current %>
+              <div class="home-rhythm-day <%= future ? 'is-future' : count.zero? ? 'is-empty' : 'has-posts' %>" aria-hidden="true" title="<%= day %>日 · <%= future ? '未到' : "#{count}条" %>">
+                <span class="home-rhythm-count"><%= count if count.positive? %></span>
+                <span class="home-rhythm-mark" style="--bar-height: <%= count.positive? ? 7 + (count * 33.0 / max_count).round : 0 %>px"></span>
+                <span class="home-rhythm-label"><%= day if day == 1 || day % 5 == 0 || day == @rhythm_month.end_of_month.day %></span>
               </div>
-
-            <% elsif parts[:images].size > 1 %>
-              <%# 多图：上文下图 %>
-              <p class="text-sm text-stone-600 group-hover:text-stone-800 leading-relaxed line-clamp-2 transition-colors mb-2.5">
-                <%= truncate(parts[:text], length: 120) %>
-              </p>
-              <div class="flex gap-1.5 overflow-hidden">
-                <% parts[:images].first(4).each_with_index do |src, i| %>
-                  <div class="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-stone-100">
-                    <img src="<%= thought_thumbnail_url(src, fill: 128) %>" alt="" class="w-full h-full object-cover" loading="lazy">
-                    <% if i == 3 && parts[:images].size > 4 %>
-                      <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <span class="text-white text-xs font-medium">+<%= parts[:images].size - 4 %></span>
-                      </div>
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
-
-            <% else %>
-              <%# 无图：纯文 %>
-              <p class="text-sm text-stone-600 group-hover:text-stone-800 leading-relaxed line-clamp-3 transition-colors">
-                <%= truncate(parts[:text], length: 150) %>
-              </p>
             <% end %>
+          </div>
+          <p class="home-rhythm-note">仅统计已发布的随想 · 灰点为 0 条 · 空心点为未来日期</p>
+        </div>
+      </section>
 
-            <div class="flex items-center gap-2 mt-2.5">
-              <time class="text-xs text-stone-300 tabular-nums">
-                <%= thought.created_at.strftime("%-m月%-d日 %H:%M") %>
-              </time>
-              <% if thought.tags.any? %>
-                <span class="text-stone-200">·</span>
-                <span class="text-xs text-stone-300"><%= thought.tags.map(&:name).join(' · ') %></span>
-              <% end %>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
-      <% end %>
-    </div>
+      <section class="home-articles" id="articles" aria-labelledby="articles-title">
+        <div class="home-section-heading">
+          <h2 id="articles-title">文章</h2>
+          <%= link_to '全部文章 →', posts_path %>
+        </div>
   <% end %>
 
-  <%# Tag 过滤条 %>
-  <% if @all_tags.any? %>
-    <div class="flex flex-wrap gap-2 mb-10">
-      <%= link_to root_path,
-            class: "px-3 py-1 rounded-full text-xs font-medium transition-colors #{@tag.nil? ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}" do %>
-        全部
-      <% end %>
-      <% @all_tags.each do |tag| %>
-        <%= link_to tag_posts_path(tag: tag.slug),
-              class: "px-3 py-1 rounded-full text-xs font-medium transition-colors #{@tag&.id == tag.id ? 'bg-stone-800 text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}" do %>
-          <%= tag.name %>
-        <% end %>
-      <% end %>
-    </div>
-  <% end %>
-
-  <%# 当前 tag 标题 %>
   <% if @tag %>
     <div class="flex items-center justify-between mb-8">
-      <h2 class="text-base font-medium text-stone-700">
-        <span class="text-stone-400 font-normal">标签 /</span> <%= @tag.name %>
-      </h2>
-      <%= link_to '← 全部文章', root_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors" %>
+      <h1 class="text-base font-medium text-stone-700"><span class="text-stone-400 font-normal">标签 /</span> <%= @tag.name %></h1>
+      <%= link_to '← 全部文章', root_path(anchor: 'articles'), class: 'text-xs text-stone-400 hover:text-stone-600' %>
     </div>
   <% end %>
+  <% if @article_index && @tag.nil? %>
+    <h1 class="text-2xl font-bold text-stone-900 mb-6">文章</h1>
+  <% end %>
 
-  <%# ─── 文章列表（按年份分组）─── %>
   <% if @posts.empty? %>
-    <div class="text-sm text-stone-400 text-center py-16">暂无文章</div>
+    <p class="home-empty">暂无文章</p>
   <% else %>
-    <% @posts.group_by { |p| p.created_at.year }.each do |year, year_posts| %>
-      <%# 年份分隔线 %>
-      <div class="flex items-center gap-3 mb-2 mt-8 first:mt-0">
-        <span class="text-xs font-medium text-stone-400 tabular-nums"><%= year %></span>
-        <div class="flex-1 h-px bg-stone-200"></div>
-        <% if current_user && year == @posts.first&.created_at&.year %>
-          <%= link_to '写文章', new_admin_post_path, class: "text-xs text-stone-400 hover:text-amber-600 transition-colors" %>
+    <% if @article_index %>
+      <% @posts.group_by { |post| post.created_at.year }.each do |year, year_posts| %>
+        <div class="flex items-center gap-3 mb-2 mt-8 first:mt-0">
+          <span class="text-xs font-medium text-stone-400 tabular-nums"><%= year %></span>
+          <div class="flex-1 h-px bg-stone-200"></div>
+        </div>
+        <% year_posts.each do |post| %>
+          <%= render 'article_preview', post: post %>
         <% end %>
-      </div>
-
-      <% year_posts.each do |post| %>
+      <% end %>
+    <% else %>
+      <% @posts.each do |post| %>
         <%= render 'article_preview', post: post %>
       <% end %>
     <% end %>
 
-    <%# 分页 %>
     <% if @pagy.pages > 1 %>
-      <div class="flex items-center justify-center gap-1 mt-10 pt-6 border-t border-stone-100">
-        <% if @pagy.prev %>
-          <%= link_to url_for(page: @pagy.prev == 1 ? nil : @pagy.prev),
-                class: "px-3 py-1.5 text-xs text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors" do %>
-            ← 上一页
-          <% end %>
-        <% else %>
-          <span class="px-3 py-1.5 text-xs text-stone-200 cursor-default">← 上一页</span>
-        <% end %>
-
-        <div class="flex items-center gap-1 mx-2">
-          <% (1..@pagy.pages).each do |page| %>
-            <% if page == @pagy.page %>
-              <span class="w-7 h-7 flex items-center justify-center text-xs font-medium bg-stone-800 text-white rounded-full"><%= page %></span>
-            <% elsif (@pagy.page - page).abs <= 2 || page == 1 || page == @pagy.pages %>
-              <%= link_to url_for(page: page == 1 ? nil : page),
-                    class: "w-7 h-7 flex items-center justify-center text-xs text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-full transition-colors" do %>
-                <%= page %>
-              <% end %>
-            <% elsif (@pagy.page - page).abs == 3 %>
-              <span class="text-xs text-stone-200 px-1">…</span>
-            <% end %>
-          <% end %>
-        </div>
-
-        <% if @pagy.next %>
-          <%= link_to url_for(page: @pagy.next),
-                class: "px-3 py-1.5 text-xs text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-md transition-colors" do %>
-            下一页 →
-          <% end %>
-        <% else %>
-          <span class="px-3 py-1.5 text-xs text-stone-200 cursor-default">下一页 →</span>
-        <% end %>
-      </div>
+      <nav class="home-pagination" aria-label="文章分页">
+        <%= link_to '← 上一页', url_for(page: @pagy.prev), class: 'home-page-link' if @pagy.prev %>
+        <span><%= @pagy.page %> / <%= @pagy.pages %></span>
+        <%= link_to '下一页 →', url_for(page: @pagy.next), class: 'home-page-link' if @pagy.next %>
+      </nav>
     <% end %>
   <% end %>
 
+  <% unless @article_index %>
+      </section>
+    </div>
+  <% end %>
 </div>

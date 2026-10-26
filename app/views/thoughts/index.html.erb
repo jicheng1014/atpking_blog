@@ -1,8 +1,8 @@
 <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10">
 
   <div class="mb-8">
-    <h1 class="text-xl font-semibold text-stone-900 mb-1">灵感</h1>
-    <p class="text-sm text-stone-400">转瞬即逝的想法</p>
+    <h1 class="text-xl font-semibold text-stone-900 mb-1">随想</h1>
+    <p class="text-sm text-stone-400">随时记下的想法</p>
   </div>
 
   <% if current_user %>
@@ -87,7 +87,7 @@
 
   <% if @thoughts.empty? %>
     <div class="text-sm text-stone-400 text-center py-16">
-      <%= @selected_date ? "这一天还没有灵感" : "暂无灵感" %>
+      <%= @selected_date ? "这一天还没有随想" : "暂无随想" %>
     </div>
   <% else %>
     <div class="space-y-0">
@@ -96,8 +96,8 @@
           <div class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full bg-stone-300"></div>
 
           <div class="mb-1">
-            <time class="text-xs text-stone-400 tabular-nums">
-              <%= link_to thought.created_at.strftime("%Y年%-m月%-d日 %H:%M"),
+            <time class="text-xs text-stone-400 tabular-nums" datetime="<%= thought.publication_time.iso8601 %>">
+              <%= link_to thought.publication_time.in_time_zone.strftime("%Y年%-m月%-d日 %H:%M"),
                     thought_path(thought),
                     class: "hover:text-amber-600 transition-colors" %>
             </time>

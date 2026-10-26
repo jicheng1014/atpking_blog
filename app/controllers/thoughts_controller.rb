@@ -16,15 +16,15 @@ class ThoughtsController < ApplicationController
     published = Thought.status_published
 
     # Group by date in Ruby (not SQL DATE()) to respect Rails timezone (UTC+8 for Chinese audience)
-    @first_month = [ published.minimum(:created_at)&.to_date&.beginning_of_month || today, today ].min
+    @first_month = [ published.minimum(:published_at)&.in_time_zone&.to_date&.beginning_of_month || today, today ].min
     @heatmap_data = published
-      .where(created_at: @current_month.beginning_of_day..@current_month.end_of_month.end_of_day)
-      .pluck(:created_at)
-      .group_by { |t| t.to_date.to_s }
+      .where(published_at: @current_month.beginning_of_day...(@current_month + 1.month).beginning_of_day)
+      .pluck(:published_at)
+      .group_by { |t| t.in_time_zone.to_date.to_s }
       .transform_values(&:count)
 
-    scope = published.includes(:tags).order(created_at: :desc)
-    scope = scope.where(created_at: @selected_date.beginning_of_day..@selected_date.end_of_day) if @selected_date
+    scope = published.includes(:tags).order(published_at: :desc, id: :desc)
+    scope = scope.where(published_at: @selected_date.beginning_of_day...@selected_date.next_day.beginning_of_day) if @selected_date
     @pagy, @thoughts = pagy(scope, limit: 20)
   end
 

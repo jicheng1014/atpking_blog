@@ -16,8 +16,8 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
     20.times do |index|
       Post.create!(title: "Article #{index}", custom_slug: "article-#{index}", content: "Public body", status: "published", user: users(:one), tags: [tags(:one)])
     end
-    thought = Thought.create!(content: "Public thought", user: users(:one), created_at: 1.month.ago)
-    20.times { Thought.create!(content: "Another public thought", user: users(:one), created_at: thought.created_at) }
+    thought = Thought.create!(content: "Public thought", user: users(:one), published_at: 1.month.ago)
+    20.times { Thought.create!(content: "Another public thought", user: users(:one), published_at: thought.published_at) }
     Thought.create!(content: "Secret thought", status: "draft", user: users(:one))
     StaticSiteExporter.new(@release).call
 
@@ -27,8 +27,8 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
     assert page("/posts/#{posts(:one).id}").file?
     assert page("/posts/published-article").file?
     assert page("/thoughts/#{thought.slug}").file?
-    assert page("/thoughts", month: thought.created_at.strftime("%Y-%m"), date: thought.created_at.to_date.iso8601).file?
-    assert page("/thoughts", page: 2, month: thought.created_at.strftime("%Y-%m"), date: thought.created_at.to_date.iso8601).file?
+    assert page("/thoughts", month: thought.published_at.strftime("%Y-%m"), date: thought.published_at.to_date.iso8601).file?
+    assert page("/thoughts", page: 2, month: thought.published_at.strftime("%Y-%m"), date: thought.published_at.to_date.iso8601).file?
     refute page("/posts/private-draft").exist?
     refute page("/tags/rails").exist?
     refute_includes page("/tags").read, "Rails</span>"

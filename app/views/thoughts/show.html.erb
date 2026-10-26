@@ -6,7 +6,7 @@
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
-      所有灵感
+      所有随想
     <% end %>
 
     <% if current_user && @thought.user_id == current_user.id %>
@@ -19,8 +19,8 @@
 
   <%# 元信息 %>
   <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mb-6">
-    <time class="text-xs text-stone-400 tabular-nums" datetime="<%= @thought.created_at.iso8601 %>">
-      <%= @thought.created_at.strftime("%Y年%-m月%-d日 %H:%M") %>
+    <time class="text-xs text-stone-400 tabular-nums" datetime="<%= @thought.publication_time.iso8601 %>">
+      <%= @thought.publication_time.in_time_zone.strftime("%Y年%-m月%-d日 %H:%M") %>
     </time>
     <% if @thought.tags.any? %>
       <span class="text-stone-200 text-xs">|</span>
@@ -47,7 +47,7 @@
   <%# 底部 %>
   <div class="mt-12 pt-6 border-t border-stone-100 flex items-center justify-between">
     <%= link_to thoughts_path, class: "text-xs text-stone-400 hover:text-stone-700 transition-colors" do %>
-      ← 所有灵感
+      ← 所有随想
     <% end %>
     <a href="#" class="text-xs text-stone-300 hover:text-stone-500 transition-colors">↑ 回到顶部</a>
   </div>

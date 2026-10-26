@@ -1,5 +1,5 @@
 <%# @param post [Post] 要显示的文章对象 %>
-<article class="group py-4 border-b border-stone-100 last:border-0">
+<article class="article-preview group py-4 border-b border-stone-100 last:border-0">
   <div class="flex gap-4 sm:gap-6">
 
     <%# 日期列（桌面端） %>
@@ -9,12 +9,12 @@
 
     <%# 正文区 %>
     <div class="flex-1 min-w-0">
-      <h2 class="text-sm font-medium text-stone-800 leading-snug mb-1.5">
+      <h2 class="article-preview-title text-sm font-medium text-stone-800 leading-snug mb-1.5">
         <%= link_to post.title, post.thought? ? thought_path(post) : post_path(post),
               class: "hover:text-amber-700 transition-colors duration-150" %>
       </h2>
 
-      <p class="text-xs text-stone-400 leading-relaxed mb-2 line-clamp-2">
+      <p class="article-preview-summary text-xs text-stone-400 leading-relaxed mb-2 line-clamp-2">
         <%= truncate(strip_tags(post.rendered_content), length: 100) %>
       </p>
 

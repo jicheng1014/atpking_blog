@@ -1,21 +1,17 @@
 <!-- 导航栏 -->
-<nav class="sticky top-0 z-10 bg-stone-50/80 backdrop-blur-sm border-b border-stone-200" data-controller="mobile-menu">
-  <div class="max-w-2xl mx-auto px-4 sm:px-6">
+<nav class="blog-navbar sticky top-0 z-10 backdrop-blur-sm border-b" data-controller="mobile-menu">
+  <div class="blog-nav-inner">
     <div class="flex items-center justify-between h-14">
 
       <!-- Logo -->
-      <%= link_to root_path, class: "flex items-center gap-2 group" do %>
-        <%= image_tag "logo.jpeg", class: "h-5 w-5 rounded-full object-cover", alt: "Logo" %>
-        <span class="text-sm font-semibold text-stone-800 group-hover:text-stone-500 transition-colors">
-          <%= Setting.site_name.presence || '3Q RUOK?' %>
-        </span>
-      <% end %>
+      <%= link_to 'ATPKING', root_path, class: 'blog-wordmark' %>
 
       <!-- 桌面端导航 -->
       <div class="hidden sm:flex items-center gap-6">
-        <%= link_to '文章', root_path, class: nav_link_class(controller_name == 'posts' || (controller_name == 'tags' && action_name == 'show')) %>
-        <%= link_to '灵感', thoughts_path, class: nav_link_class(controller_name == 'thoughts') %>
-        <%= link_to '标签', tags_path, class: nav_link_class(controller_name == 'tags' && action_name == 'index') %>
+        <%= link_to '随想', root_path(anchor: 'thoughts'), class: nav_link_class(controller_name == 'thoughts' || (controller_name == 'posts' && action_name == 'index' && params[:tag].blank?)) %>
+        <%= link_to '文章', posts_path, class: nav_link_class(controller_name == 'posts' && request.path != root_path) %>
+        <%= link_to '项目', root_path(anchor: 'projects'), class: nav_link_class(false) %>
+        <%= link_to '关于', root_path(anchor: 'about'), class: nav_link_class(false) %>
         <% if current_user %>
           <%= link_to '管理', admin_root_path, class: "text-xs text-stone-400 hover:text-stone-600 transition-colors border border-stone-200 px-2.5 py-1 rounded-full" %>
         <% end %>
@@ -40,8 +36,10 @@
   <!-- 移动端菜单面板 -->
   <div class="hidden sm:hidden border-t border-stone-200" data-mobile-menu-target="panel">
     <div class="max-w-2xl mx-auto px-4 py-3 space-y-0.5">
-      <%= link_to '文章', root_path, class: mobile_nav_link_class(controller_name == 'posts') %>
-      <%= link_to '灵感', thoughts_path, class: mobile_nav_link_class(controller_name == 'thoughts') %>
+      <%= link_to '随想', root_path(anchor: 'thoughts'), class: mobile_nav_link_class(controller_name == 'thoughts') %>
+      <%= link_to '文章', posts_path, class: mobile_nav_link_class(controller_name == 'posts' && request.path != root_path) %>
+      <%= link_to '项目', root_path(anchor: 'projects'), class: mobile_nav_link_class(false) %>
+      <%= link_to '关于', root_path(anchor: 'about'), class: mobile_nav_link_class(false) %>
       <%= link_to '标签', tags_path, class: mobile_nav_link_class(controller_name == 'tags') %>
       <% if current_user %>
         <%= link_to '管理文章', admin_root_path, class: mobile_nav_link_class(false) %>

@@ -2,7 +2,7 @@
 <html class="h-full bg-stone-50">
   <head>
     <%= render 'shared/google_analytics' %>
-    <title><%= Setting.site_name.presence || 'My Blog' %></title>
+    <title><%= content_for?(:title) ? yield(:title) : (Setting.site_name.presence || 'ATPKING') %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">

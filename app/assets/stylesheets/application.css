@@ -28,3 +28,83 @@
 @media (prefers-reduced-motion: reduce) {
   .progressive-images-enabled .progressive-image > img[data-lqip] { transition: none; }
 }
+
+/* Personal homepage: one reading column for thoughts and a quieter article index. */
+.blog-navbar { background: rgba(250, 252, 255, .94); border-color: #dce5f1; }
+.blog-nav-inner { max-width: 1388px; margin: auto; padding: 0 36px; }
+.blog-wordmark { color: #101e3d; font-size: 20px; font-weight: 800; letter-spacing: -.045em; }
+.blog-wordmark:hover { color: #0755b6; }
+
+.home-page {
+  max-width: 1388px;
+  margin: auto;
+  padding: 34px 36px 64px;
+  color: #102044;
+}
+.home-intro { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; padding-bottom: 27px; border-bottom: 1px solid #dbe4f0; }
+.home-identity { display: flex; align-items: center; gap: 24px; min-width: 0; }
+.home-avatar { width: 78px; height: 78px; flex: none; display: grid; place-items: center; border-radius: 6px; background: #345e91; color: white; font-size: 52px; font-weight: 700; line-height: 1; }
+.home-identity h1 { margin: 0 0 4px; font-size: 28px; font-weight: 800; letter-spacing: -.04em; line-height: 1.1; }
+.home-identity p { margin: 0; color: #597092; font-size: 15px; }
+.home-projects { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; font-size: 14px; }
+.home-projects span { color: #7587a5; }
+.home-projects a, .home-section-heading a { color: #0756b9; text-decoration: none; }
+.home-projects a:hover, .home-section-heading a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.home-columns { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(320px, 1fr); margin-top: 30px; }
+.home-thoughts { min-width: 0; padding-right: 32px; }
+.home-articles { min-width: 0; border-left: 1px solid #dbe4f0; padding-left: 36px; }
+.home-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 12px; }
+.home-section-heading h2 { color: #0e1c3b; font-size: 30px; font-weight: 800; letter-spacing: -.045em; line-height: 1.3; }
+.home-section-heading a { flex: none; font-size: 13px; }
+.home-thought { padding: 18px 0 20px; border-bottom: 1px solid #dbe4f0; overflow-wrap: anywhere; }
+.home-thought-meta { display: flex; align-items: center; gap: 8px; color: #7187a8; font-size: 13px; }
+.home-thought-meta time { font-variant-numeric: tabular-nums; }
+.home-thought-meta a { color: inherit; text-decoration: none; }
+.home-thought-meta a:hover { color: #0756b9; text-decoration: underline; }
+.home-mini-avatar { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 4px; background: #3b6495; color: white; font-weight: 700; font-size: 15px; }
+.home-thought-content { margin-top: 8px; color: #263b61; font-size: 17px; line-height: 1.75; }
+.home-thought-content p { margin: .25em 0; }
+.home-thought-content a { color: #0756b9; overflow-wrap: anywhere; }
+.home-thought-content img { display: block; max-width: 100%; max-height: 380px; width: auto; height: auto; margin: 12px 0 0; border-radius: 6px; }
+.home-thought-content pre { max-width: 100%; overflow-x: auto; }
+.home-empty { padding: 36px 0; color: #8292aa; font-size: 14px; }
+.home-articles .article-preview { padding: 20px 0; border-color: #dbe4f0; }
+.home-articles .article-preview > .flex > div:first-child { display: none; }
+.home-articles .article-preview-title { font-size: 18px; font-weight: 700; line-height: 1.5; color: #132345; }
+.home-articles .article-preview-title a:hover { color: #0756b9; }
+.home-articles .article-preview-summary { font-size: 14px; line-height: 1.6; color: #7187a8; }
+.home-pagination { display: flex; align-items: center; justify-content: center; gap: 20px; border-top: 1px solid #dbe4f0; margin-top: 22px; padding-top: 20px; color: #8191aa; font-size: 13px; }
+.home-page-link { color: #0756b9; }
+.home-page-link:hover { text-decoration: underline; }
+.home-rhythm { margin-top: 28px; padding-top: 15px; border-top: 1px solid #dbe4f0; }
+.home-rhythm-heading { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.home-rhythm-heading h3 { font-size: 16px; font-weight: 700; }
+.home-rhythm-heading span, .home-rhythm-note { color: #8394ad; font-size: 11px; }
+.home-rhythm-days { display: grid; grid-template-columns: repeat(var(--days), minmax(0, 1fr)); align-items: end; gap: 1px; margin-top: 9px; border-bottom: 1px solid #dbe4f0; }
+.home-rhythm-day { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 79px; min-width: 0; font-variant-numeric: tabular-nums; }
+.home-rhythm-count { display: block; height: 15px; margin-top: auto; color: #234b84; font-size: 10px; line-height: 15px; }
+.home-rhythm-mark { display: block; flex: none; width: min(12px, 74%); }
+.home-rhythm-day.has-posts .home-rhythm-mark { height: var(--bar-height); background: #1762c5; border-radius: 3px 3px 0 0; }
+.home-rhythm-day.is-empty .home-rhythm-mark, .home-rhythm-day.is-future .home-rhythm-mark { width: 5px; height: 5px; margin-bottom: 2px; border-radius: 50%; }
+.home-rhythm-day.is-empty .home-rhythm-mark { background: #abb9cd; }
+.home-rhythm-day.is-future .home-rhythm-mark { border: 1px solid #abb9cd; }
+.home-rhythm-label { height: 17px; color: #7890b1; font-size: 10px; line-height: 17px; white-space: nowrap; }
+.home-rhythm-note { margin-top: 7px; }
+
+@media (max-width: 900px) {
+  .home-columns { grid-template-columns: minmax(0, 1fr); }
+  .home-thoughts { padding-right: 0; }
+  .home-articles { border-left: 0; border-top: 1px solid #dbe4f0; padding: 30px 0 0; margin-top: 36px; }
+}
+@media (max-width: 640px) {
+  .blog-nav-inner, .home-page { padding-left: 18px; padding-right: 18px; }
+  .home-page { padding-top: 25px; }
+  .home-intro { gap: 18px; padding-bottom: 22px; }
+  .home-identity { gap: 14px; }
+  .home-avatar { width: 56px; height: 56px; font-size: 37px; }
+  .home-identity h1 { font-size: 23px; }
+  .home-identity p { font-size: 13px; }
+  .home-projects { gap: 7px 14px; font-size: 12px; }
+  .home-section-heading h2 { font-size: 25px; }
+  .home-thought-content { font-size: 16px; }
+}
