@@ -108,7 +108,7 @@
       <% end %>
     <% end %>
 
-    <% if @pagy.pages > 1 %>
+    <% if @article_index && @pagy.pages > 1 %>
       <nav class="home-pagination" aria-label="文章分页">
         <%= link_to '← 上一页', url_for(page: @pagy.prev), class: 'home-page-link' if @pagy.prev %>
         <span><%= @pagy.page %> / <%= @pagy.pages %></span>

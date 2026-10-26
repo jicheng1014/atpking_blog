@@ -2,7 +2,7 @@ class PostsController < ApplicationController
   allow_unauthenticated_access # 允许未登录访问所有动作
 
   def index
-    @article_index = request.path == posts_path
+    @article_index = request.path == posts_path || params[:page].to_i > 1
     @posts = Post.only_posts.status_published.includes(:user, :tags)
 
     if params[:tag].present?
@@ -11,7 +11,9 @@ class PostsController < ApplicationController
       @posts = @posts.joins(:tags).where(tags: { id: @tag.id })
     end
 
-    @pagy, @posts = pagy(@posts.order(created_at: :desc), limit: 20)
+    articles = @posts.order(created_at: :desc)
+    @pagy, @posts = pagy(articles, limit: 20) if @article_index
+    @posts = articles.limit(6) unless @article_index
     @all_tags = Tag.left_joins(:posts).where(posts: { status: 'published', type: nil })
                    .group(:id).select('tags.*, COUNT(posts.id) as posts_count')
                    .having('COUNT(posts.id) > 0').order('posts_count DESC')

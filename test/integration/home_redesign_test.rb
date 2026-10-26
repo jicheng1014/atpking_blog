@@ -37,4 +37,17 @@ class HomeRedesignTest < ActionDispatch::IntegrationTest
       assert_select ".home-rhythm-day.is-future", 29
     end
   end
+
+  test "home previews six articles while the article index keeps the full list" do
+    7.times do |index|
+      Post.create!(title: "Recent article #{index}", custom_slug: "recent-article-#{index}", content: "Body", status: "published", user: users(:one))
+    end
+
+    get root_path
+    assert_select ".home-articles .article-preview", 6
+    assert_select ".home-pagination", 0
+
+    get posts_path
+    assert_select ".article-preview", Post.only_posts.status_published.count
+  end
 end
