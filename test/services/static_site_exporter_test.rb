@@ -23,6 +23,12 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
 
     assert page("/posts", page: 2).file?
     assert page("/", page: 2).file?
+    assert page("/projects").file?
+    projects = Nokogiri::HTML(page("/projects").read)
+    assert_equal 4, projects.css(".project-card").size
+    projects.css(".project-image img").each do |image|
+      assert @release.join(image["src"].delete_prefix("/")).file?, "Missing project image: #{image['src']}"
+    end
     assert page("/posts/tag/ruby", page: 2).file?
     assert page("/posts/#{posts(:one).id}").file?
     assert page("/posts/published-article").file?

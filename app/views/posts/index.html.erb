@@ -25,6 +25,26 @@
           <%= link_to '全部随想 →', thoughts_path %>
         </div>
 
+        <div class="home-rhythm" aria-labelledby="rhythm-title">
+          <div class="home-rhythm-heading">
+            <h3 id="rhythm-title">本月发布节奏</h3>
+            <span><%= @rhythm_month.strftime('%Y年%-m月') %> · 随想 / 日</span>
+          </div>
+          <% max_count = [@rhythm_counts.values.max.to_i, 1].max %>
+          <div class="home-rhythm-days" style="--days: <%= @rhythm_month.end_of_month.day %>" role="img" aria-label="<%= @rhythm_month.strftime('%Y年%-m月') %>每天已发布随想数量：<%= @rhythm_counts.sort.map { |day, count| "#{day}日#{count}条" }.join('，').presence || '暂无发布' %>；其余已过去日期为零条">
+            <% (1..@rhythm_month.end_of_month.day).each do |day| %>
+              <% count = @rhythm_counts.fetch(day, 0) %>
+              <% future = @rhythm_month.change(day: day) > Date.current %>
+              <div class="home-rhythm-day <%= future ? 'is-future' : count.zero? ? 'is-empty' : 'has-posts' %>" aria-hidden="true" title="<%= day %>日 · <%= future ? '未到' : "#{count}条" %>">
+                <span class="home-rhythm-count"><%= count if count.positive? %></span>
+                <span class="home-rhythm-mark" style="--bar-height: <%= count.positive? ? 7 + (count * 33.0 / max_count).round : 0 %>px"></span>
+                <span class="home-rhythm-label"><%= day if day == 1 || day % 5 == 0 || day == @rhythm_month.end_of_month.day %></span>
+              </div>
+            <% end %>
+          </div>
+          <p class="home-rhythm-note"><span>本月 <%= @rhythm_counts.values.sum %> 条随想</span><span>灰点为 0 条 · 空心点为未来日期 · 仅统计已发布随想</span></p>
+        </div>
+
         <% if current_user %>
           <%= render 'thoughts/quick_post_form', thought: Thought.new, redirect_to_path: root_path %>
         <% end %>
@@ -51,25 +71,6 @@
           </div>
         <% end %>
 
-        <div class="home-rhythm" aria-labelledby="rhythm-title">
-          <div class="home-rhythm-heading">
-            <h3 id="rhythm-title">本月发布节奏</h3>
-            <span><%= @rhythm_month.strftime('%Y年%-m月') %> · 随想 / 日</span>
-          </div>
-          <% max_count = [@rhythm_counts.values.max.to_i, 1].max %>
-          <div class="home-rhythm-days" style="--days: <%= @rhythm_month.end_of_month.day %>" role="img" aria-label="<%= @rhythm_month.strftime('%Y年%-m月') %>每天已发布随想数量：<%= @rhythm_counts.sort.map { |day, count| "#{day}日#{count}条" }.join('，').presence || '暂无发布' %>；其余已过去日期为零条">
-            <% (1..@rhythm_month.end_of_month.day).each do |day| %>
-              <% count = @rhythm_counts.fetch(day, 0) %>
-              <% future = @rhythm_month.change(day: day) > Date.current %>
-              <div class="home-rhythm-day <%= future ? 'is-future' : count.zero? ? 'is-empty' : 'has-posts' %>" aria-hidden="true" title="<%= day %>日 · <%= future ? '未到' : "#{count}条" %>">
-                <span class="home-rhythm-count"><%= count if count.positive? %></span>
-                <span class="home-rhythm-mark" style="--bar-height: <%= count.positive? ? 7 + (count * 33.0 / max_count).round : 0 %>px"></span>
-                <span class="home-rhythm-label"><%= day if day == 1 || day % 5 == 0 || day == @rhythm_month.end_of_month.day %></span>
-              </div>
-            <% end %>
-          </div>
-          <p class="home-rhythm-note">仅统计已发布的随想 · 灰点为 0 条 · 空心点为未来日期</p>
-        </div>
       </section>
 
       <section class="home-articles" id="articles" aria-labelledby="articles-title">

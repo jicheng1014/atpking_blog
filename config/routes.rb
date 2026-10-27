@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session
   # 设置首页为文章列表
   root "posts#index"
+  get "projects", to: "posts#projects"
 
   # 公开可访问的路由（只读）
   resources :posts, only: [:index, :show] do

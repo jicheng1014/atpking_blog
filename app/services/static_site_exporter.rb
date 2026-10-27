@@ -26,6 +26,7 @@ class StaticSiteExporter
     paginated("/", posts.count)
     paginated("/posts", posts.count)
     export("/tags")
+    export("/projects")
     Post.status_published.find_each do |post|
       prefix = post.thought? ? "/thoughts" : "/posts"
       export("#{prefix}/#{ERB::Util.url_encode(post.to_param)}")

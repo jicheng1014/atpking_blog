@@ -1,6 +1,9 @@
 class PostsController < ApplicationController
   allow_unauthenticated_access # 允许未登录访问所有动作
 
+  def projects
+  end
+
   def index
     @article_index = request.path == posts_path || params[:page].to_i > 1
     @posts = Post.only_posts.status_published.includes(:user, :tags)

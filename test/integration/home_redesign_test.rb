@@ -11,6 +11,8 @@ class HomeRedesignTest < ActionDispatch::IntegrationTest
       get root_path
       assert_response :success
       assert_select ".home-projects a", 4
+      assert_select "nav a[href='#{projects_path}']", 2
+      assert_select ".home-thoughts > .home-section-heading + .home-rhythm", 1
       assert_select ".home-thought-meta time[datetime='#{published_at.iso8601}']", 1
       assert_select ".home-rhythm-day.has-posts", 1
       assert_select ".home-rhythm-day.is-future", 5
@@ -49,5 +51,17 @@ class HomeRedesignTest < ActionDispatch::IntegrationTest
 
     get posts_path
     assert_select ".article-preview", Post.only_posts.status_published.count
+  end
+
+  test "project introductions have their own public page" do
+    get projects_path
+    assert_response :success
+    assert_select "title", text: "项目 · ATPKING"
+    assert_select "h1", text: "项目"
+    assert_select ".project-card", 4
+    assert_select ".project-image img[alt][width][height]", 4
+    assert_select ".project-card[target='_blank'][rel='noopener noreferrer']", 4
+    assert_select "nav a[aria-current='page'][href='#{projects_path}']", 2
+    assert_select ".home-projects", 0
   end
 end
