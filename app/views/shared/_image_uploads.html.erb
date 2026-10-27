@@ -1,0 +1,26 @@
+<div class="image-uploads" data-paste-image-target="uploads" hidden>
+  <div class="image-uploads-heading">图片预览 <span data-paste-image-target="count"></span></div>
+  <div class="image-uploads-list" data-paste-image-target="list"></div>
+  <p class="image-uploads-hint" data-paste-image-target="hint" role="status"></p>
+</div>
+<template data-paste-image-target="template">
+  <div class="image-upload" data-state="uploading">
+    <div class="image-upload-thumbnail">
+      <button type="button" class="image-upload-preview" aria-label="放大预览图片">
+        <span class="image-upload-fallback">图片</span>
+        <img alt="" width="64" height="64">
+        <span class="image-upload-spinner" aria-hidden="true"></span>
+      </button>
+      <button type="button" class="image-upload-remove" aria-label="移除图片">×</button>
+    </div>
+    <div class="image-upload-details">
+      <p class="image-upload-name"></p>
+      <div class="image-upload-status"><span></span><button type="button" class="image-upload-retry" hidden>重试</button></div>
+      <progress max="100" value="0" aria-label="图片上传进度"></progress>
+    </div>
+  </div>
+</template>
+<dialog class="image-upload-dialog" data-paste-image-target="dialog" aria-label="图片预览">
+  <button type="button" data-action="paste-image#closePreview" aria-label="关闭图片预览">×</button>
+  <img alt="上传图片预览">
+</dialog>

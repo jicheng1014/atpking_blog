@@ -1,0 +1,112 @@
+require "application_system_test_case"
+
+class ImageUploadsTest < ApplicationSystemTestCase
+  setup do
+    page.driver.browser.execute_cdp("Emulation.clearDeviceMetricsOverride")
+    page.driver.browser.manage.window.resize_to(1400, 1000)
+    visit new_session_path
+    fill_in "email_address", with: users(:one).email_address
+    fill_in "password", with: "password"
+    click_button "登录"
+    assert_selector "a", text: "管理", wait: 10
+    visit root_path
+    assert_selector "[data-controller='paste-image quick-post']"
+    @image = Tempfile.new(["upload-preview", ".png"])
+    @image.binmode
+    @image.write(Vips::Image.black(80, 60).new_from_image([40, 100, 160]).pngsave_buffer)
+    @image.flush
+  end
+
+  teardown do
+    @image&.close!
+  end
+
+  test "waits for server processing, preserves edits, previews and publishes a real uploaded image" do
+    release = Queue.new
+    convert = WebImage.method(:convert)
+    WebImage.define_singleton_method(:convert) { |*args, **options| release.pop; convert.call(*args, **options) }
+    begin
+      fill_in "thought_content", with: "上传时继续记录"
+      find("[data-paste-image-target='fileInput']", visible: :all).attach_file @image.path, make_visible: true
+      assert_selector ".image-upload[data-state='processing']", text: "正在处理图片"
+      assert_button "上传中…", disabled: true
+      fill_in "thought_content", with: "上传期间新增的文字不能丢失"
+      find("#thought_content").send_keys([:control, :enter])
+      page.execute_script("document.querySelector('[data-controller=\"paste-image quick-post\"]').requestSubmit()")
+      assert_current_path root_path
+      assert_selector ".image-upload[data-state='processing']"
+      release << true
+      assert_selector ".image-upload[data-state='uploaded']", text: "已上传"
+    ensure
+      WebImage.define_singleton_method(:convert, convert)
+      release << true
+    end
+    assert_field "thought_content", with: "上传期间新增的文字不能丢失"
+    assert_button "发布", disabled: false
+    find(".image-upload-preview").click
+    assert_selector "dialog[open] img"
+    find("[aria-label='关闭图片预览']").click
+    assert_no_selector "dialog[open]"
+
+    page.save_screenshot(Rails.root.join("tmp/thought-upload-desktop.png"))
+    page.driver.browser.execute_cdp("Emulation.setDeviceMetricsOverride", width: 390, height: 844, deviceScaleFactor: 1, mobile: true)
+    assert_equal 390, page.evaluate_script("window.innerWidth")
+    assert_equal false, page.evaluate_script("document.documentElement.scrollWidth > window.innerWidth")
+    page.save_screenshot(Rails.root.join("tmp/thought-upload-mobile.png"))
+    click_button "发布"
+    assert_text "灵感已发布"
+    thought = Thought.order(:id).last
+    assert_includes thought.content, "上传期间新增的文字不能丢失"
+    assert_equal 1, thought.images.count
+    assert_selector ".home-thought-content img"
+  end
+
+  test "failed images block submission until retried or removed without losing text" do
+    invalid = Tempfile.new(["invalid-image", ".png"])
+    invalid.write("not a valid image")
+    invalid.flush
+    fill_in "thought_content", with: "失败也要保留的随想"
+    find("[data-paste-image-target='fileInput']", visible: :all).attach_file invalid.path, make_visible: true
+    assert_selector ".image-upload[data-state='failed']", text: "图片上传失败"
+    assert_button "待处理", disabled: true
+    find("#thought_content").send_keys([:control, :enter])
+    assert_current_path root_path
+    click_button "重试"
+    assert_selector ".image-upload[data-state='failed']"
+    assert_field "thought_content", with: "失败也要保留的随想"
+    find(".image-upload-remove").click
+    assert_no_selector ".image-upload"
+    assert_button "发布", disabled: false
+    click_button "发布"
+    assert_text "灵感已发布"
+    assert_text "失败也要保留的随想"
+  ensure
+    invalid&.close!
+  end
+
+  test "article editor retains Markdown upload and removal behavior" do
+    visit edit_admin_post_path(posts(:one))
+    assert_selector "[data-controller='markdown-editor paste-image']"
+    original = find("#post_content").value
+    find("[data-paste-image-target='fileInput']", visible: :all).attach_file @image.path, make_visible: true
+    assert_selector ".image-upload[data-state='uploaded']"
+    assert_includes find("#post_content").value, "!["
+    find(".image-upload-remove").click
+    assert_equal original.strip, find("#post_content").value.strip
+    assert_button "保存更改", disabled: false
+  end
+
+  test "multiple images serialize once and removal keeps the text unchanged" do
+    fill_in "thought_content", with: "正文保持不变"
+    find("[data-paste-image-target='fileInput']", visible: :all).attach_file [@image.path, @image.path], make_visible: true
+    assert_selector ".image-upload[data-state='uploaded']", count: 2
+    assert_equal 2, page.evaluate_script("new FormData(document.querySelector('[data-controller=\"paste-image quick-post\"]')).get('thought[content]')").scan("![").length
+    all(".image-upload-remove").first.click
+    assert_selector ".image-upload[data-state='uploaded']", count: 1
+    assert_equal 1, page.evaluate_script("new FormData(document.querySelector('[data-controller=\"paste-image quick-post\"]')).get('thought[content]')").scan("![").length
+    find(".image-upload-remove").click
+    assert_no_selector ".image-upload"
+    assert_field "thought_content", with: "正文保持不变"
+    assert_equal 0, page.evaluate_script("new FormData(document.querySelector('[data-controller=\"paste-image quick-post\"]')).get('thought[content]')").scan("![").length
+  end
+end
