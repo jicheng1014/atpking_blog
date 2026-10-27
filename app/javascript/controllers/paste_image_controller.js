@@ -5,6 +5,7 @@ export default class extends Controller {
 
   connect() {
     this.uploads = new Set()
+    this.uploadQueue = Promise.resolve()
     this.form = this.element.closest("form")
     this.submitButtons = [...this.form.querySelectorAll('input[type="submit"], button[type="submit"]')]
       .filter(button => !button.closest("dialog"))
@@ -84,20 +85,77 @@ export default class extends Controller {
         this.dialogTarget.showModal()
       }
       row.querySelector(".image-upload-remove").onclick = () => this.removeUpload(upload, true)
-      row.querySelector(".image-upload-retry").onclick = () => this.uploadImage(upload)
+      row.querySelector(".image-upload-retry").onclick = () => this.queueUpload(upload)
       this.uploads.add(upload)
       this.listTarget.append(row)
-      this.uploadImage(upload)
+      this.queueUpload(upload)
+    }
+  }
+
+  queueUpload(upload) {
+    this.setState(upload, "queued", "等待上传…")
+    // ponytail: serialize uploads to limit phone memory; split the queue if transport becomes a bottleneck.
+    this.uploadQueue = this.uploadQueue.then(() => this.uploads.has(upload) && this.uploadImage(upload))
+  }
+
+  async compressImage(file) {
+    // Never flatten animated GIF/WebP/SVG or recompress already small images.
+    if (file.size <= 512 * 1024 || !/^image\/(jpeg|png|heic|heif)$/.test(file.type)) return file
+    const url = URL.createObjectURL(file)
+    const canvas = document.createElement("canvas")
+    try {
+      if (file.type === "image/png") {
+        // APNG declares acTL before IDAT; inspect headers without reading the whole file.
+        let offset = 8
+        while (offset + 8 <= file.size) {
+          const header = new DataView(await file.slice(offset, offset + 8).arrayBuffer())
+          if (header.getUint32(4) === 0x6163544c) return file
+          if (header.getUint32(4) === 0x49444154) break
+          offset += header.getUint32(0) + 12
+        }
+      }
+      const image = new Image()
+      image.src = url
+      await image.decode() // Native decoding applies the photo's EXIF orientation.
+      const scale = Math.min(1, 1920 / Math.max(image.naturalWidth, image.naturalHeight))
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale))
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale))
+      canvas.getContext("2d").drawImage(image, 0, 0, canvas.width, canvas.height)
+      const type = file.type === "image/png" ? "image/png" : "image/jpeg"
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, type, 0.82))
+      if (!blob || blob.size >= file.size) return file
+      const extension = blob.type === "image/png" ? ".png" : ".jpg"
+      return new File([blob], file.name.replace(/\.[^.]+$/, "") + extension, { type: blob.type, lastModified: file.lastModified })
+    } catch {
+      // Browsers that cannot decode HEIC keep using the server converter.
+      return file
+    } finally {
+      URL.revokeObjectURL(url)
+      canvas.width = canvas.height = 0
     }
   }
 
   async uploadImage(upload) {
-    this.setState(upload, "uploading", "正在上传… 0%")
+    this.setState(upload, "compressing", "正在压缩图片…")
     const progress = upload.row.querySelector("progress")
     progress.value = 0
     try {
-      if (!upload.file.type.startsWith("image/")) throw new Error("只能上传图片文件")
-      if (upload.file.size > 10 * 1024 * 1024) throw new Error("图片大小不能超过 10MB，请缩小后重选")
+      let file = upload.file
+      if (!file.type) {
+        const extension = file.name.split(".").pop().toLowerCase()
+        const type = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", heic: "image/heic", heif: "image/heif" }[extension]
+        if (type) file = new File([file], file.name, { type, lastModified: file.lastModified })
+      }
+      if (!file.type.startsWith("image/")) throw new Error("只能上传图片文件")
+      upload.preparedFile ||= await this.compressImage(file)
+      if (!this.uploads.has(upload)) return
+      if (upload.preparedFile.size > 10 * 1024 * 1024) throw new Error("图片处理后仍超过 10MB，请转换为 JPG 或缩小后重选")
+      if (upload.preparedFile.size < upload.file.size) {
+        URL.revokeObjectURL(upload.localURL)
+        upload.localURL = URL.createObjectURL(upload.preparedFile)
+        upload.row.querySelector("img").src = upload.localURL
+      }
+      this.setState(upload, "uploading", "正在上传… 0%")
       const data = await new Promise((resolve, reject) => {
         const xhr = upload.xhr = new XMLHttpRequest()
         xhr.open("POST", "/admin/posts/upload_image")
@@ -123,7 +181,7 @@ export default class extends Controller {
         xhr.ontimeout = () => reject(new Error("上传超时，请重试"))
         xhr.onabort = () => reject(new Error("上传已取消"))
         const body = new FormData()
-        body.append("image", upload.file)
+        body.append("image", upload.preparedFile)
         xhr.send(body)
       })
       if (!this.uploads.has(upload)) return
@@ -146,9 +204,9 @@ export default class extends Controller {
   setState(upload, state, message) {
     upload.state = state
     upload.row.dataset.state = state
-    upload.row.querySelector(".image-upload-status span").textContent = message
-    upload.row.querySelector(".image-upload-retry").hidden = state !== "failed" || upload.file.size > 10 * 1024 * 1024
-    upload.row.querySelector("progress").hidden = state === "uploaded" || state === "failed"
+    upload.row.querySelector(".image-upload-status span").textContent = message + (upload.preparedFile?.size < upload.file.size ? " · 已压缩" : "")
+    upload.row.querySelector(".image-upload-retry").hidden = state !== "failed" || upload.preparedFile?.size > 10 * 1024 * 1024
+    upload.row.querySelector("progress").hidden = !["uploading", "processing"].includes(state)
     this.updateForm()
   }
 
@@ -166,13 +224,14 @@ export default class extends Controller {
 
   updateForm() {
     const uploads = [...this.uploads]
-    const pending = uploads.some(upload => ["uploading", "processing"].includes(upload.state))
+    const compressing = uploads.some(upload => upload.state === "compressing")
+    const pending = uploads.some(upload => !["uploaded", "failed"].includes(upload.state))
     const failed = uploads.some(upload => upload.state === "failed")
     this.uploadsTarget.hidden = !uploads.length
     this.countTarget.textContent = `· ${uploads.length} 张`
-    this.hintTarget.textContent = failed ? "请重试或移除失败图片后发布，已输入的文字会保留。" : pending ? "上传完成后即可发布，可继续输入文字。" : "图片已就绪，点击缩略图可放大预览。"
+    this.hintTarget.textContent = failed ? "请重试或移除失败图片后发布，已输入的文字会保留。" : pending ? "图片处理完成后即可发布，可继续输入文字。" : "图片已就绪，点击缩略图可放大预览。"
     for (const { button, disabled } of this.submitButtons) button.disabled = disabled || pending || failed
-    if (this.hasSubmitTarget) this.submitTarget.value = pending ? "上传中…" : failed ? "待处理" : this.submitLabel
+    if (this.hasSubmitTarget) this.submitTarget.value = compressing ? "压缩中…" : pending ? "上传中…" : failed ? "待处理" : this.submitLabel
     this.editorTarget.setAttribute("aria-busy", String(pending))
   }
 

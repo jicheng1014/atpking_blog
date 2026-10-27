@@ -1,5 +1,7 @@
 #!/bin/sh
 runtime=/home/atpking/atpking-blog/runtime
+export VIPSHOME="$runtime"
+export LIBHEIF_PLUGIN_PATH="$runtime/system-libs/libheif/plugins"
 export RUBYLIB="$runtime/local/lib/ruby/4.0.0:$runtime/local/lib/ruby/4.0.0/x86_64-linux${RUBYLIB:+:$RUBYLIB}"
 export GEM_HOME="$runtime/local/bundle"
 export GEM_PATH="$runtime/local/bundle:$runtime/local/bundle/ruby/4.0.0:$runtime/local/lib/ruby/gems/4.0.0"

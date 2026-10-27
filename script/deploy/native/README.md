@@ -27,10 +27,13 @@ COPYFILE_DISABLE=1 tar --no-xattrs -czf portable-runtime.tar.gz \
 ```sh
 ssh local_ubuntu_virt 'mkdir -p /home/atpking/atpking-blog/runtime /home/atpking/atpking-blog/bin'
 ssh local_ubuntu_virt 'tar --no-same-owner -xzf - -C /home/atpking/atpking-blog/runtime' < portable-runtime.tar.gz
+ssh local_ubuntu_virt 'ln -sfn system-libs /home/atpking/atpking-blog/runtime/x86_64-linux-gnu'
 scp script/deploy/native/ruby script/deploy/native/bundle script/deploy/native/sqlite3 \
   local_ubuntu_virt:/home/atpking/atpking-blog/bin/
 scp script/deploy/native/runtime-check.rb local_ubuntu_virt:/home/atpking/atpking-blog/
 ```
+
+`VIPSHOME` 通过 `x86_64-linux-gnu` 链接定位 libvips 模块，`LIBHEIF_PLUGIN_PATH` 定位已有 HEVC 解码插件；缺少这些路径时，普通 JPEG 上传仍能工作，但 HEIC 无法转换。无需另装图片处理库。
 
 已有运行时升级时，先在单独目录验证，停止博客服务后保留旧运行时并切换；不要覆盖正在运行的共享库。原始生产数据库、storage、uploads、环境文件和部署密钥沿用已有持久目录，不从镜像恢复覆盖。
 
