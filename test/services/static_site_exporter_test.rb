@@ -48,6 +48,30 @@ class StaticSiteExporterTest < ActiveSupport::TestCase
     assert_includes page("/posts/tag/ruby", page: 2).read, '/posts/tag/ruby"'
   end
 
+  test "monthly static pages contain only that month and export only its pagination" do
+    travel_to Time.zone.local(2026, 11, 1, 12) do
+      21.times do |index|
+        Thought.create!(content: "October #{index}", user: users(:one), published_at: Time.zone.local(2026, 10, 28, 12) - index.minutes)
+      end
+      Thought.create!(content: "November thought", user: users(:one), published_at: Time.zone.local(2026, 11, 1))
+      Thought.create!(content: "August thought", user: users(:one), published_at: Time.zone.local(2026, 8, 1))
+      StaticSiteExporter.new(@release).call
+
+      october = Nokogiri::HTML(page("/thoughts", month: "2026-10").read)
+      assert_equal 20, october.css("time[datetime]").size
+      assert october.css("time[datetime]").all? { |node| Time.iso8601(node["datetime"]).in_time_zone.month == 10 }
+      assert_equal 1, Nokogiri::HTML(page("/thoughts", month: "2026-10", page: 2).read).css("time").size
+      refute page("/thoughts", month: "2026-10", page: 3).exist?
+
+      november = Nokogiri::HTML(page("/thoughts", month: "2026-11").read)
+      assert_equal 1, november.css("time").size
+      refute page("/thoughts", month: "2026-11", page: 2).exist?
+      assert_empty Nokogiri::HTML(page("/thoughts", month: "2026-09").read).css("time")
+      assert page("/thoughts", page: 2).file?
+      assert_equal 1, Nokogiri::HTML(page("/thoughts", date: "2026-10-28", page: 2).read).css("time").size
+    end
+  end
+
   test "exports normalized WebP at proxy redirect and legacy paths" do
     bytes = Vips::Image.black(32, 32).new_from_image([50, 120, 200]).pngsave_buffer
     blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new(bytes), filename: "image space.png", content_type: "image/png")

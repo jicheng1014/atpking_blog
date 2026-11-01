@@ -45,11 +45,12 @@ class StaticSiteExporter
 
   def export_thoughts
     dates = Thought.status_published.pluck(:published_at).map { |time| time.in_time_zone.to_date }.tally
+    month_counts = dates.each_with_object(Hash.new(0)) { |(date, count), counts| counts[date.beginning_of_month] += count }
     paginated("/thoughts", dates.values.sum)
     current = Date.current.beginning_of_month
     month = [ dates.keys.min&.beginning_of_month || current, current ].min
     while month <= current
-      paginated("/thoughts", dates.values.sum, month: month.strftime("%Y-%m"))
+      paginated("/thoughts", month_counts[month], month: month.strftime("%Y-%m"))
       month += 1.month
     end
     dates.each do |date, count|

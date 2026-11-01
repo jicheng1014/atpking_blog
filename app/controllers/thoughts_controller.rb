@@ -24,7 +24,11 @@ class ThoughtsController < ApplicationController
       .transform_values(&:count)
 
     scope = published.includes(:tags).order(published_at: :desc, id: :desc)
-    scope = scope.where(published_at: @selected_date.beginning_of_day...@selected_date.next_day.beginning_of_day) if @selected_date
+    if @selected_date
+      scope = scope.where(published_at: @selected_date.beginning_of_day...@selected_date.next_day.beginning_of_day)
+    elsif params[:month].present?
+      scope = scope.where(published_at: @current_month.beginning_of_day...(@current_month + 1.month).beginning_of_day)
+    end
     @pagy, @thoughts = pagy(scope, limit: 20)
   end
 
