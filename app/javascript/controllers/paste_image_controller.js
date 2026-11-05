@@ -5,6 +5,7 @@ export default class extends Controller {
 
   connect() {
     this.uploads = new Set()
+    this.submitting = false
     this.uploadQueue = Promise.resolve()
     this.form = this.element.closest("form")
     this.submitButtons = [...this.form.querySelectorAll('input[type="submit"], button[type="submit"]')]
@@ -12,10 +13,18 @@ export default class extends Controller {
       .map(button => ({ button, disabled: button.disabled }))
     this.submitLabel = this.hasSubmitTarget ? this.submitTarget.value : null
     this.guardSubmit = event => {
-      if (![...this.uploads].some(upload => upload.state !== "uploaded")) return
-      event.preventDefault()
-      event.stopImmediatePropagation()
-      this.hintTarget.focus()
+      if (this.submitting || [...this.uploads].some(upload => upload.state !== "uploaded")) {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        if (!this.submitting) this.hintTarget.focus()
+        return
+      }
+      this.submitting = true
+      this.updateForm()
+    }
+    this.finishSubmit = () => {
+      this.submitting = false
+      this.updateForm()
     }
     this.appendUploads = event => {
       if (!this.hasSubmitTarget) return
@@ -30,6 +39,7 @@ export default class extends Controller {
     }
     this.beforeCache = () => this.clearUploads()
     this.form.addEventListener("submit", this.guardSubmit, true)
+    this.form.addEventListener("turbo:submit-end", this.finishSubmit)
     this.form.addEventListener("formdata", this.appendUploads)
     this.editorTarget.addEventListener("input", this.syncPreviews)
     document.addEventListener("turbo:before-cache", this.beforeCache)
@@ -39,6 +49,7 @@ export default class extends Controller {
   disconnect() {
     this.clearUploads()
     this.form.removeEventListener("submit", this.guardSubmit, true)
+    this.form.removeEventListener("turbo:submit-end", this.finishSubmit)
     this.form.removeEventListener("formdata", this.appendUploads)
     this.editorTarget.removeEventListener("input", this.syncPreviews)
     document.removeEventListener("turbo:before-cache", this.beforeCache)
@@ -230,8 +241,8 @@ export default class extends Controller {
     this.uploadsTarget.hidden = !uploads.length
     this.countTarget.textContent = `· ${uploads.length} 张`
     this.hintTarget.textContent = failed ? "请重试或移除失败图片后发布，已输入的文字会保留。" : pending ? "图片处理完成后即可发布，可继续输入文字。" : "图片已就绪，点击缩略图可放大预览。"
-    for (const { button, disabled } of this.submitButtons) button.disabled = disabled || pending || failed
-    if (this.hasSubmitTarget) this.submitTarget.value = compressing ? "压缩中…" : pending ? "上传中…" : failed ? "待处理" : this.submitLabel
+    for (const { button, disabled } of this.submitButtons) button.disabled = disabled || this.submitting || pending || failed
+    if (this.hasSubmitTarget) this.submitTarget.value = this.submitting ? "发布中…" : compressing ? "压缩中…" : pending ? "上传中…" : failed ? "待处理" : this.submitLabel
     this.editorTarget.setAttribute("aria-busy", String(pending))
   }
 
